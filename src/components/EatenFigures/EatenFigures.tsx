@@ -1,48 +1,30 @@
-import React, { FC, useState } from 'react'
-import { Board } from '../../models/Board';
-import { Colors } from '../../models/Colors';
-import { Figure } from '../../models/figures/Figure';
-import { Rook } from '../../models/figures/Rook';
+import React, { FC } from 'react'
 import { EatenContainer, EatenTitle, FiguresList, FigureBody } from './EatenFigures.styles';
 
-import blackLogo from '../../assets/black-rook.png'
-import whiteLogo from '../../assets/white-rook.png'
+import { Figure } from '../../models/figures/Figure';
 
 interface EatenFiguresProps {
-    board: Board
+  lostWhiteFigures: Figure[];
+  lostBlackFigures: Figure[];
 }
 
-const EatenFigures: FC<EatenFiguresProps> = ({board}) => {
-  const [whiteFigure, setWhiteFigures] = useState<Figure[]>([
-    
-  ]);
 
-  const [blackFigure, setBlackFigures] = useState<Figure[]>([
-
-  ]);
+const EatenFigures: FC<EatenFiguresProps> = ({ lostWhiteFigures, lostBlackFigures }) => {
 
   return (
     <EatenContainer>
-        <EatenTitle color='black'>Чёрные фигуры:</EatenTitle>
+        <EatenTitle color='black'>Black Figures:</EatenTitle>
         <FiguresList>
-            <FigureBody src={blackLogo} alt="figure" />
-            <FigureBody src={blackLogo} alt="figure" />
-            <FigureBody src={blackLogo} alt="figure" />
-            <FigureBody src={blackLogo} alt="figure" />
-            <FigureBody src={blackLogo} alt="figure" />
+            {/* <FigureBody src={blackLogo} alt="figure" /> */}
+            {lostBlackFigures.map(figure => 
+              <FigureBody src={figure.logo} alt={figure.name} key={figure.id} />
+            )}
         </FiguresList>
-        <EatenTitle color='white'>Белые фигуры:</EatenTitle>
+        <EatenTitle color='white'>White Figures:</EatenTitle>
         <FiguresList>
-            <FigureBody src={whiteLogo} alt="figure" />
-            <FigureBody src={whiteLogo} alt="figure" />
-            <FigureBody src={whiteLogo} alt="figure" />
-            <FigureBody src={whiteLogo} alt="figure" />
-            <FigureBody src={whiteLogo} alt="figure" />
-            <FigureBody src={whiteLogo} alt="figure" />
-            <FigureBody src={whiteLogo} alt="figure" />
-            <FigureBody src={whiteLogo} alt="figure" />
-            <FigureBody src={whiteLogo} alt="figure" />
-            <FigureBody src={whiteLogo} alt="figure" />
+            {lostWhiteFigures.map(figure => 
+              <FigureBody src={figure.logo} alt={figure.name} key={figure.id} />
+            )}
         </FiguresList>
     </EatenContainer>
   )

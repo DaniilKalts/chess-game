@@ -1,11 +1,16 @@
-import React from 'react'
-import { Info, InfoText, InfoTitle } from './ChessInfo.styles';
+import React, { useContext } from 'react'
+import { PlayerContext } from '../../context/PlayerContext';
+import { CurrentPlayer, Info, InfoText, InfoTitle } from './ChessInfo.styles';
 
 const ChessInfo = () => {
+  
+  const player = useContext(PlayerContext);
+  
   return (
     <Info>
         <InfoTitle>Chess<span>Game</span></InfoTitle>
-        <InfoText></InfoText>
+        <CurrentPlayer color={player?.color}>Current Player: <span>{player?.color}</span></CurrentPlayer>
+        {/* <InfoText></InfoText> */}
     </Info>
   )
 }

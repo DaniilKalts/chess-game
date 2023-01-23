@@ -17,3 +17,10 @@ export const InfoTitle = styled.h1`
 export const InfoText = styled.p`
     color: #fff;
 `
+
+export const CurrentPlayer = styled.h3`
+  color: #9fa9ba;
+  span{
+    color: ${props => props.color === 'black' ? '#000' : '#fff'};
+  }
+`
