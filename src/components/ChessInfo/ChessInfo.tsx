@@ -1,8 +1,16 @@
-import React, { useContext } from 'react'
+import React, { FC, useContext } from 'react'
 import { PlayerContext } from '../../context/PlayerContext';
-import { CurrentPlayer, Info, InfoText, InfoTitle } from './ChessInfo.styles';
+import { Board } from '../../models/Board';
+import MovementsHistory from '../MovementsHistory/MovementsHistory';
+import Timer from '../Timer/Timer';
+import { CurrentPlayer, Info, InfoTitle } from './ChessInfo.styles';
 
-const ChessInfo = () => {
+interface InfoProps {
+  restart: () => void,
+  board: Board
+}
+
+const ChessInfo: FC<InfoProps> = ({ restart, board }) => {
   
   const player = useContext(PlayerContext);
   
@@ -10,7 +18,8 @@ const ChessInfo = () => {
     <Info>
         <InfoTitle>Chess<span>Game</span></InfoTitle>
         <CurrentPlayer color={player?.color}>Current Player: <span>{player?.color}</span></CurrentPlayer>
-        {/* <InfoText></InfoText> */}
+        <Timer currentPlayer={player} restart={restart} />
+        <MovementsHistory board={board} />
     </Info>
   )
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import BoardComponent from './components/BoardComponent'
+import BoardComponent from './components/Board/BoardComponent'
 import ChessInfo from './components/ChessInfo/ChessInfo';
 import EatenFigures from './components/EatenFigures/EatenFigures';
 import { PlayerContext } from './context/PlayerContext';
@@ -35,7 +35,7 @@ function App() {
       value={currentPlayer}
     >
       <div className="app">
-        <ChessInfo />
+        <ChessInfo restart={restart} board={board} />
         <BoardComponent
           board={board}
           setBoard={setBoard}

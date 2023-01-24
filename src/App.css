@@ -18,12 +18,12 @@ body {
   align-items: center; 
 }
 
-.board {
+/* .board {
   width: calc(64px * 8);
   height: calc(64px * 8);
   display: flex; 
   flex-wrap: wrap;
-}
+} */
 
 .cell {
   width: 64px;

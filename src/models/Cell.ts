@@ -1,5 +1,6 @@
 import { Board } from "./Board";
 import { Colors } from "./Colors";
+import { Coordinates } from "./Coordinates";
 import { Figure } from "./figures/Figure";
 
 export class Cell {
@@ -86,9 +87,15 @@ export class Cell {
         return true;
     }
 
-    setFigure(figure: Figure) {
+    setFigure(figure: Figure, absX: number, absY: number) {
         this.figure = figure;
         this.figure.cell = this;
+        
+
+        this.board.movements.push({
+            logo: figure.logo,
+            coordinate: `${Coordinates[absX] + absY}`
+        })
     }
 
     addLostFigure(figure: Figure) {
@@ -98,13 +105,13 @@ export class Cell {
         
     }
 
-    moveFigure(target: Cell) {
+    moveFigure(target: Cell, absX: number, absY: number) {
         if (this.figure && this.figure?.canMove(target)) {
             this.figure.moveFigure(target);
             if (target.figure) {
                 this.addLostFigure(target.figure);
             }
-            target.setFigure(this.figure);
+            target.setFigure(this.figure, absX, absY);
             this.figure = null;
         }
     }
