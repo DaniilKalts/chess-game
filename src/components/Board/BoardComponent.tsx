@@ -28,10 +28,11 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPl
 
   function click(cell: Cell) {
     if (selectedCell && selectedCell !== cell && selectedCell.figure?.canMove(cell)) {
-        selectedCell.moveFigure(cell, cell.x, 8-cell.y);
-        console.log(cell.x, cell.y);
-        setSelectedCell(null);
-        swapPlayer();
+        if (cell.available) {
+          selectedCell.moveFigure(cell, cell.x, 8-cell.y);
+          setSelectedCell(null);
+          swapPlayer();
+        }
     } else {
         if (cell.figure?.color === currentPlayer?.color) {
           setSelectedCell(cell);

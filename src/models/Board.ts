@@ -1,7 +1,7 @@
 import { Cell } from "./Cell";
 import { Colors } from "./Colors";
 import { Bishop } from "./figures/Bishop";
-import { Figure } from "./figures/Figure";
+import { Figure, FigureNames } from "./figures/Figure";
 import { King } from "./figures/King";
 import { Knight } from "./figures/Knight";
 import { Pawn } from "./figures/Pawn";
@@ -14,6 +14,7 @@ export class Board {
     lostBlackFigures: Figure[] = [];
     lostWhiteFigures: Figure[] = [];
     movements: Movement[] = [];
+    checkFigure: Figure[] = [];
 
     public initCells () {
         for (let i = 0; i < 8; i++) {
@@ -35,7 +36,24 @@ export class Board {
         newBoard.lostBlackFigures = this.lostBlackFigures;
         newBoard.lostWhiteFigures = this.lostWhiteFigures;
         newBoard.movements = this.movements;
+        newBoard.checkFigure = this.checkFigure;
+
         return newBoard;
+    }
+
+    public getFriendlyKing(target: Cell) {
+        for (let i = 0; i < this.cells.length; i++) {
+            const row: Cell[] = this.cells[i];
+            for (let j = 0; j < row.length; j++) {
+                const currentCell = row[j];
+
+                if (target.figure 
+                && currentCell.figure?.color === target?.figure?.color
+                && currentCell.figure?.name === FigureNames.KING) {
+                    return currentCell.figure;
+                }
+            }
+        }
     }
 
     public highlightCells(selectedCell: Cell | null) {
@@ -43,7 +61,105 @@ export class Board {
             const row: Cell[] = this.cells[i];
             for (let j = 0; j < row.length; j++) {
                 const target = row[j];
-                target.available = !!selectedCell?.figure?.canMove(target);
+                target.available = !!selectedCell?.figure?.canMove(target); 
+
+                const checkFigure = target.board.checkFigure[0];
+                
+                if (checkFigure && target.available && selectedCell) {
+                    let king = this.getFriendlyKing(selectedCell) as Figure;
+
+                    const bishopCheck = () => {
+                        if (Math.abs(checkFigure.cell.x - target.x) === Math.abs(checkFigure.cell.y - target.y)
+                        && Math.abs(king.cell.x - target.x) === Math.abs(king.cell.y - target.y)) {
+                            console.log(target.x, target.y, checkFigure.cell.x, checkFigure.cell.y, king.cell.x, king.cell.y)
+                            if (king.cell.y < checkFigure.cell.y
+                            && (target.y <= checkFigure.cell.y && target.y > king.cell.y)) {
+                                target.available = true;
+                            } else if (king.cell.y > checkFigure.cell.y
+                            && (target.y >= checkFigure.cell.y && target.y < king.cell.y)) {
+                                target.available = true;
+                            }
+                        }
+                    }
+
+                    const rookCheck = () => {
+                        if (target.x === checkFigure.cell.x && king.cell.x === target.x
+                        && Math.abs(checkFigure.cell.y - king.cell.y) > Math.abs(checkFigure.cell.y - target.y)) {
+                            target.available = true;
+                        } 
+                            
+                        if (target.y === checkFigure.cell.y && king.cell.y === target.y
+                        && Math.abs(checkFigure.cell.x - king.cell.x) > Math.abs(checkFigure.cell.x - target.x)) {
+                            target.available = true;
+                        } 
+
+                        return target.available === true ? true : false;
+                    }
+
+                    const canAttackCheckFigure = () => {
+                        if (target.x === checkFigure.cell.x && target.y === checkFigure.cell.y) {
+                            target.available = true;
+                        }
+                        if (target.x === checkFigure.cell.x && target.y === checkFigure.cell.y) {
+                            target.available = true;
+                        }
+                    }
+
+                    if (checkFigure.name === FigureNames.QUEEN
+                        && selectedCell.figure?.name !== FigureNames.KING) {
+                        target.available = false;
+
+                        if (target.x === checkFigure.cell.x && target.y === checkFigure.cell.y) {
+                            target.available = true;
+                            return
+                        }
+
+                        bishopCheck();
+                        const isRook = rookCheck(); 
+
+                        if (target.available && isRook) {
+                            if (target.y === king.cell.y && target.y === checkFigure.cell.y) {
+                                if (checkFigure.cell.x < king.cell.x) {
+                                    target.available = target.x > checkFigure.cell.x && target.x < king.cell.x;
+                                } else if (checkFigure.cell.x > king.cell.x) {
+                                    target.available = target.x < checkFigure.cell.x && target.x > king.cell.x;
+                                }
+                            }
+
+                            if (target.x === king.cell.x && target.x === checkFigure.cell.x) {
+                                if (checkFigure.cell.y < king.cell.y) {
+                                    target.available = target.y > checkFigure.cell.y && target.y < king.cell.y;
+                                } else if (checkFigure.cell.y > king.cell.y) {
+                                    target.available = target.y < checkFigure.cell.y && target.y > king.cell.y;
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (checkFigure.name === FigureNames.BISHOP
+                    && selectedCell.figure?.name !== FigureNames.KING) {
+                        target.available = false;
+                        bishopCheck();
+                    }
+                    
+                    if (checkFigure.name === FigureNames.ROOK
+                    && selectedCell.figure?.name !== FigureNames.KING) {
+                        target.available = false;
+                        rookCheck();
+                    }
+
+                    if (checkFigure.name === FigureNames.KNIGHT
+                    && selectedCell.figure?.name !== FigureNames.KING) {
+                        target.available = false;
+                        canAttackCheckFigure();
+                    }
+
+                    if (checkFigure.name === FigureNames.PAWN
+                    && selectedCell.figure?.name !== FigureNames.KING) {
+                        target.available = false;
+                        canAttackCheckFigure();
+                    }
+                }
             }
         }
     }

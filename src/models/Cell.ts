@@ -1,7 +1,7 @@
 import { Board } from "./Board";
 import { Colors } from "./Colors";
 import { Coordinates } from "./Coordinates";
-import { Figure } from "./figures/Figure";
+import { Figure, FigureNames } from "./figures/Figure";
 
 export class Cell {
     readonly x: number;
@@ -79,7 +79,7 @@ export class Cell {
         const dx = this.x < target.x ? 1 : -1;
 
         for (let i = 1; i < absY; i++) {
-            if(!this.board.getCell(this.x + dx*i, this.y + dy * i).isEmpty()) {
+            if(!this.board.getCell(this.x + dx * i, this.y + dy * i).isEmpty()) {
                 return false;
             }
         }
@@ -91,7 +91,6 @@ export class Cell {
         this.figure = figure;
         this.figure.cell = this;
         
-
         this.board.movements.push({
             logo: figure.logo,
             coordinate: `${Coordinates[absX] + absY}`
@@ -102,16 +101,46 @@ export class Cell {
         figure.color === Colors.BLACK
         ? this.board.lostBlackFigures.push(figure)
         : this.board.lostWhiteFigures.push(figure)
-        
+    }
+
+    getEnemyKing(target: Cell) {
+        for (let i = 0; i < this.board.cells.length; i++) {
+            const row: Cell[] = this.board.cells[i];
+            for (let j = 0; j < row.length; j++) {
+                const currentCell = row[j];
+                if (target.figure 
+                && currentCell.figure?.color !== target.figure?.color
+                && currentCell.figure?.name === FigureNames.KING) {
+                    return currentCell.figure;
+                }
+            }
+        }
+    }
+
+    isCheck(target: Cell) {
+        const king = this.getEnemyKing(target) as Figure;
+            
+        if (target.figure?.canMove(king?.cell)) {
+            this.board.checkFigure.length ? this.board.checkFigure.splice(0,1) : '';
+            this.board.checkFigure.push(target.figure);
+            return true;
+        }
+
+        this.board.checkFigure.splice(0,1);
+        return false;
     }
 
     moveFigure(target: Cell, absX: number, absY: number) {
-        if (this.figure && this.figure?.canMove(target)) {
+        if (this.figure && this.figure?.canMove(target)) {   
             this.figure.moveFigure(target);
+
             if (target.figure) {
                 this.addLostFigure(target.figure);
             }
             target.setFigure(this.figure, absX, absY);
+
+            console.log(this.isCheck(target))
+
             this.figure = null;
         }
     }

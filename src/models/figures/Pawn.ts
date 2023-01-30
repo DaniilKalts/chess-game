@@ -25,7 +25,7 @@ export class Pawn extends Figure {
         && target.x === this.cell.x && this.cell.board.getCell(target.x, target.y).isEmpty() && this.cell.isEmptyVertical(target)) {            
             return true;
         }
-
+        
         if(target.y === this.cell.y + direction
         && (target.x === this.cell.x + 1 || target.x === this.cell.x - 1)
         && this.cell.isEnemy(target)) {
