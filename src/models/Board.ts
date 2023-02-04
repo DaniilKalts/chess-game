@@ -15,6 +15,7 @@ export class Board {
     lostWhiteFigures: Figure[] = [];
     movements: Movement[] = [];
     checkFigure: Figure[] = [];
+    isChangingPawn: Figure[] = [];
 
     public initCells () {
         for (let i = 0; i < 8; i++) {
@@ -30,6 +31,27 @@ export class Board {
         }
     }
 
+    public changePawn(figure: any){
+        const changingPawnCell = this.isChangingPawn[0].cell
+        const cell = this.getCell(changingPawnCell.x, changingPawnCell.y);
+        
+        
+        if (changingPawnCell.figure?.color) {
+            if (figure.name === 'Rook') {
+                cell.figure = new Rook(changingPawnCell.figure.color, cell);
+            } else if (figure.name === 'Knight') {
+                cell.figure = new Knight(changingPawnCell.figure.color, cell);
+            } else if (figure.name === 'Queen') {
+                cell.figure = new Queen(changingPawnCell.figure.color, cell);
+            } else if (figure.name === 'Bishop') {
+                cell.figure = new Bishop(changingPawnCell.figure.color, cell);
+            }
+        }
+        // console.log(cell.figure)
+        
+        this.isChangingPawn.splice(0,1);
+    }
+
     public getCopyBoard(): Board {
         const newBoard = new Board();
         newBoard.cells = this.cells;
@@ -37,6 +59,7 @@ export class Board {
         newBoard.lostWhiteFigures = this.lostWhiteFigures;
         newBoard.movements = this.movements;
         newBoard.checkFigure = this.checkFigure;
+        newBoard.isChangingPawn = this.isChangingPawn;
 
         return newBoard;
     }
@@ -71,7 +94,6 @@ export class Board {
                     const bishopCheck = () => {
                         if (Math.abs(checkFigure.cell.x - target.x) === Math.abs(checkFigure.cell.y - target.y)
                         && Math.abs(king.cell.x - target.x) === Math.abs(king.cell.y - target.y)) {
-                            console.log(target.x, target.y, checkFigure.cell.x, checkFigure.cell.y, king.cell.x, king.cell.y)
                             if (king.cell.y < checkFigure.cell.y
                             && (target.y <= checkFigure.cell.y && target.y > king.cell.y)) {
                                 target.available = true;
@@ -84,16 +106,28 @@ export class Board {
 
                     const rookCheck = () => {
                         if (target.x === checkFigure.cell.x && king.cell.x === target.x
-                        && Math.abs(checkFigure.cell.y - king.cell.y) > Math.abs(checkFigure.cell.y - target.y)) {
-                            target.available = true;
+                        && Math.abs(checkFigure.cell.y - king.cell.y) > Math.abs(checkFigure.cell.y - target.y)) {                            
+                            if (king.cell.y < checkFigure.cell.y
+                            && (target.y <= checkFigure.cell.y && target.y > king.cell.y)) {
+                                target.available = true;
+                            } else if (king.cell.y > checkFigure.cell.y
+                            && (target.y >= checkFigure.cell.y && target.y < king.cell.y)) {
+                                target.available = true;
+                            }
                         } 
                             
                         if (target.y === checkFigure.cell.y && king.cell.y === target.y
                         && Math.abs(checkFigure.cell.x - king.cell.x) > Math.abs(checkFigure.cell.x - target.x)) {
-                            target.available = true;
+                            if (king.cell.x < checkFigure.cell.x
+                            && (target.x <= checkFigure.cell.x && target.x > king.cell.x)) {
+                                target.available = true;
+                            } else if (king.cell.x > checkFigure.cell.x
+                            && (target.x >= checkFigure.cell.x && target.x < king.cell.x)) {
+                                target.available = true;
+                            }
                         } 
 
-                        return target.available === true ? true : false;
+                        return target.available;
                     }
 
                     const canAttackCheckFigure = () => {
@@ -115,6 +149,15 @@ export class Board {
                         }
 
                         bishopCheck();
+
+                        if (target.available ) {
+                            if (checkFigure.cell.x === king.cell.x && target.x !== king.cell.x) {
+                                target.available = false;
+                            } else if (checkFigure.cell.y === king.cell.y && target.y !== king.cell.y) {
+                                target.available = false;
+                            }
+                        }
+
                         const isRook = rookCheck(); 
 
                         if (target.available && isRook) {

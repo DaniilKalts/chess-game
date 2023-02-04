@@ -2,6 +2,7 @@ import { Board } from "./Board";
 import { Colors } from "./Colors";
 import { Coordinates } from "./Coordinates";
 import { Figure, FigureNames } from "./figures/Figure";
+import { Queen } from "./figures/Queen";
 
 export class Cell {
     readonly x: number;
@@ -88,9 +89,25 @@ export class Cell {
     }
 
     setFigure(figure: Figure, absX: number, absY: number) {
+
         this.figure = figure;
         this.figure.cell = this;
         
+        if (figure.name === FigureNames.PAWN
+        && (figure.color === Colors.BLACK && figure.cell.y === 7) || (figure.color === Colors.WHITE && figure.cell.y === 0)) {
+            if (figure.color === Colors.BLACK
+            && figure.cell.y === 7) {
+                this.board.isChangingPawn.length ? this.board.isChangingPawn.splice(0,1) : '';
+                this.board.isChangingPawn.push(figure);
+                console.log(this.board.isChangingPawn)
+            } else if (figure.color === Colors.WHITE
+                && figure.cell.y === 0) {
+                this.board.isChangingPawn.length ? this.board.isChangingPawn.splice(0,1) : '';
+                this.board.isChangingPawn.push(figure);
+                console.log(this.board.isChangingPawn)
+            }
+        } 
+                
         this.board.movements.push({
             logo: figure.logo,
             coordinate: `${Coordinates[absX] + absY}`
