@@ -8,7 +8,6 @@ import { PlayerContext } from './context/PlayerContext';
 import { Board } from './models/Board';
 import { Colors } from './models/Colors';
 import { Figure, FigureNames } from './models/figures/Figure';
-import { Queen } from './models/figures/Queen';
 import { Player } from './models/Player';
 
 function App() {

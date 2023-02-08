@@ -47,7 +47,12 @@ export class Board {
                 cell.figure = new Bishop(changingPawnCell.figure.color, cell);
             }
         }
-        // console.log(cell.figure)
+
+        const enemyKing = cell.getEnemyKing(cell);
+        if (enemyKing && cell.figure?.canMove(enemyKing.cell)) {
+            this.checkFigure.length > 0 ? this.checkFigure.splice(0,1) : '';
+            this.checkFigure.push(cell.figure);
+        }
         
         this.isChangingPawn.splice(0,1);
     }
@@ -87,6 +92,179 @@ export class Board {
                 target.available = !!selectedCell?.figure?.canMove(target); 
 
                 const checkFigure = target.board.checkFigure[0];
+
+                if (target.available 
+                && selectedCell
+                && !checkFigure) {
+                    let king = this.getFriendlyKing(selectedCell) as Figure;
+
+                    for (let i = 0; i < this.cells.length; i++) {
+                        const row: Cell[] = this.cells[i];
+                        for (let j = 0; j < row.length; j++) {
+                            const potentialFigure = row[j];
+                            
+                            if (potentialFigure.figure?.color !== selectedCell?.figure?.color
+                            && potentialFigure.figure?.name !== FigureNames.PAWN
+                            && potentialFigure.figure?.name !== FigureNames.KING
+                            && potentialFigure.figure?.name !== FigureNames.KNIGHT
+                            && potentialFigure.figure) {
+                                const diagonalCheck = () => {
+                                    const min = Math.min(potentialFigure.y, king.cell.y);
+                                    const max = Math.max(potentialFigure.y, king.cell.y);
+
+                                    let absX = 0;
+                                    let figuresCount = 0;
+
+                                    if (potentialFigure.y < king.cell.y) {
+                                        if (potentialFigure.x < king.cell.x) {
+                                            absX = potentialFigure.x + 1;   
+                                        } else if (potentialFigure.x > king.cell.x) {
+                                            absX = potentialFigure.x - 1; 
+                                        }
+
+                                        for (let y = min + 1; y < max; y++) {
+                                            console.log(absX, y)
+                                            const currentCell = this.getCell(absX, y);
+    
+                                            if (!currentCell.isEmpty()
+                                            && currentCell.x !== selectedCell.x
+                                            && currentCell.y !== selectedCell.y) {
+                                                console.log(currentCell.x, currentCell.y)
+                                                figuresCount += 1;
+                                            }
+    
+                                            if (potentialFigure.x < king.cell.x) {
+                                                absX += 1;   
+                                            } else if (potentialFigure.x > king.cell.x) {
+                                                absX -= 1;   
+                                            }
+                                        }
+                                    } else if (potentialFigure.y > king.cell.y) {
+                                        if (potentialFigure.x < king.cell.x) {
+                                            absX = king.cell.x - 1;   
+                                        } else if (potentialFigure.x > king.cell.x) {
+                                            absX = king.cell.x + 1; 
+                                        } 
+
+                                        for (let y = min + 1; y < max; y++) {
+                                            // console.log(absX, y)
+                                            const currentCell = this.getCell(absX, y);
+    
+                                            if (!currentCell.isEmpty()
+                                            && currentCell.x !== selectedCell.x
+                                            && currentCell.y !== selectedCell.y) {
+                                                // console.log(currentCell.x, currentCell.y)
+                                                figuresCount += 1;
+                                            }
+    
+                                            if (potentialFigure.x < king.cell.x) {
+                                                absX -= 1;   
+                                            } else if (potentialFigure.x > king.cell.x) {
+                                                absX += 1;   
+                                            }
+                                        }
+                                    }
+                                    
+                                    // console.log(figuresCount);
+
+                                    if (target.x === potentialFigure.x
+                                    && target.y === potentialFigure.y) {
+                                        return true;
+                                    }
+
+                                    return figuresCount ? true : false;
+                                }
+
+                                const horizontalCheck = () => {
+                                    let figuresCount = 0;
+
+                                    let minAbsX = Math.min(potentialFigure.x, king.cell.x);
+                                        let maxAbsX = Math.max(potentialFigure.x, king.cell.x);
+
+                                        for (let x = minAbsX + 1; x < maxAbsX; x++) {
+                                            const currentCell = this.getCell(x, potentialFigure.y);
+                                            // console.log(currentCell.x, currentCell.y)
+                                            if (!currentCell.isEmpty()
+                                            && currentCell.x !== selectedCell.x
+                                            && currentCell.y === selectedCell.y) {
+                                                figuresCount += 1;
+                                            }
+                                        }
+
+                                        // console.log(figuresCount)
+                                        if ((target.x === potentialFigure.x
+                                        && target.y === potentialFigure.y)
+                                        || (target.x !== potentialFigure.x
+                                        && target.y === potentialFigure.y)) {
+                                            return true;
+                                        }
+
+                                        return figuresCount ? true : false;
+                                }
+
+                                const verticalCheck = () => {
+                                    let figuresCount = 0;
+
+                                    let minAbsY = Math.min(potentialFigure.y, king.cell.y);
+                                    let maxAbsY = Math.max(potentialFigure.y, king.cell.y);
+
+                                    for (let y = minAbsY + 1; y < maxAbsY; y++) {
+                                        const currentCell = this.getCell(potentialFigure.x, y);
+                                        // console.log(currentCell.x, currentCell.y)
+                                        if (!currentCell.isEmpty()
+                                        && currentCell.x === selectedCell.x
+                                        && currentCell.y !== selectedCell.y) {
+                                            console.log(currentCell.x, currentCell.y)
+                                            figuresCount += 1;
+                                        }
+                                    }
+
+                                    if ((target.x === potentialFigure.x
+                                    && target.y === potentialFigure.y)
+                                    || (target.x === potentialFigure.x
+                                    && target.y !== potentialFigure.y)) {
+                                        return true;
+                                    }
+
+                                    // console.log(figuresCount)
+                                    return figuresCount ? true : false;
+                                }
+
+                                if (potentialFigure.figure && potentialFigure.figure?.canMove(selectedCell)) {
+                                    if (potentialFigure.figure.name === FigureNames.BISHOP
+                                    && Math.abs(potentialFigure.x - king.cell.x) === Math.abs(potentialFigure.y - king.cell.y)
+                                    && Math.abs(potentialFigure.x - selectedCell.x) === Math.abs(potentialFigure.y - selectedCell.y)) {
+                                        target.available = diagonalCheck();
+                                    } else if (potentialFigure.figure.name === FigureNames.ROOK
+                                    && (potentialFigure.x === king.cell.x || potentialFigure.y === king.cell.y)) {
+                                        if (potentialFigure.y === king.cell.y
+                                        && potentialFigure.y === selectedCell.y) {
+                                            target.available = horizontalCheck();
+                                        } else if (potentialFigure.x === king.cell.x 
+                                        && potentialFigure.x === selectedCell.x) {
+                                            target.available = verticalCheck();
+                                        }
+                                    } else if (potentialFigure.figure.name === FigureNames.QUEEN) {
+                                        let checkAbs = true;
+
+                                        if (potentialFigure.y === king.cell.y
+                                        && selectedCell.y === king.cell.y) {
+                                            checkAbs = horizontalCheck();
+                                        } else if (potentialFigure.x === king.cell.x
+                                        && selectedCell.x === king.cell.x) {
+                                            checkAbs = verticalCheck();
+                                        } else if (Math.abs(potentialFigure.x - king.cell.x) === Math.abs(potentialFigure.y - king.cell.y)
+                                        && Math.abs(potentialFigure.x - selectedCell.x) === Math.abs(potentialFigure.y - selectedCell.y)) {
+                                            checkAbs = diagonalCheck();
+                                        }
+
+                                        target.available = checkAbs;
+                                    }
+                                } 
+                            }
+                        }
+                    }
+                }
                 
                 if (checkFigure && target.available && selectedCell) {
                     let king = this.getFriendlyKing(selectedCell) as Figure;

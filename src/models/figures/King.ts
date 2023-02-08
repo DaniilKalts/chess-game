@@ -32,60 +32,79 @@ export class King extends Figure {
 
             const willBeUnderAttack = () => {
                 let canMove = true;
-
+                let count = 0;
+                
                 target.board.cells.forEach(cellArray => {
-                    cellArray.forEach(cell => {
-                        if(cell.figure && this.color !== cell.figure?.color){  
-                            if (cell.figure.canMove(target)
-                            && cell.figure.name !== FigureNames.PAWN) {
+                    cellArray.forEach(guardFigure => {
+                        
+                        if(guardFigure.figure && this.color !== guardFigure.figure?.color){  
+                            // const guardFigure = this.cell.board.getCell(cell.x, cell.y);
+
+                            if (guardFigure.figure.canMove(target)
+                            && guardFigure.figure.name !== FigureNames.PAWN) {
                                 canMove = false;
-                                return
+                                count += 1
+                                // console.log(count, target.x, target.y, guardFigure.x, guardFigure.y, canMove)
                             }
     
-                            if(cell.figure.name === FigureNames.PAWN
-                            && Math.abs(cell.x - this.cell.x) <= 2
-                            && Math.abs(cell.y - this.cell.y) <= 2
-                            && Math.abs(target.x - cell.x) === 1
-                            && Math.abs(target.y - cell.y) === 1) {
-                                canMove = false;
-                                return
+                            if(guardFigure.figure.name === FigureNames.PAWN
+                            && Math.abs(guardFigure.x - this.cell.x) <= 2
+                            && Math.abs(guardFigure.y - this.cell.y) <= 2
+                            && Math.abs(target.x - guardFigure.x) === 1
+                            && Math.abs(target.y - guardFigure.y) === 1
+                            && !target.figure ) {
+                                if (guardFigure.figure.color === Colors.BLACK
+                                && guardFigure.y - target.y === -1) {
+                                    canMove = false;
+                                    count += 1;
+                                } else if (guardFigure.figure.color === Colors.WHITE
+                                && guardFigure.y - target.y === 1) {
+                                    canMove = false;
+                                    count += 1;
+                                }
+                                
+                                console.log(count, target.x, target.y, guardFigure.x, guardFigure.y, canMove)
                             } 
 
-                            if ((Math.abs((this.cell.x + this.cell.y) - (cell.x + cell.y))) <= 2
-                            && Math.abs(this.cell.x - cell.x) <= 1
-                            && Math.abs(this.cell.y - cell.y) <= 1
-                            && cell.figure) {
-                                const newCell = new Cell(this.cell.board, cell.x, cell.y, cell.figure.color, null);
+                            if(guardFigure.figure.name === FigureNames.PAWN
+                            && Math.abs(target.x - guardFigure.x) === 1
+                            && target.figure) {
+                                if (guardFigure.figure.color === Colors.BLACK
+                                && guardFigure.y - target.y === -1) {
+                                    canMove = false;
+                                    count += 1
+                                    console.log(count, target.x, target.y, guardFigure.x, guardFigure.y, canMove)
+                                } else if (guardFigure.figure.color === Colors.WHITE
+                                && guardFigure.y - target.y === 1) {
+                                    canMove = false;
+                                    count += 1
+                                    console.log(count, target.x, target.y, guardFigure.x, guardFigure.y, canMove)
+                                }
+                            }
+                            
+                            if (target.figure) {
+                                const newCell = new Cell(this.cell.board, target.x, target.y, target.figure.color, null);
 
-                                target.board.cells.forEach(cellsArr => {
-                                    cellsArr.forEach(cellItem => {
-    
-                                        if (cellItem.figure && this.color !== cellItem.figure?.color) {
-                                            const guardFigure = this.cell.board.getCell(cellItem.x, cellItem.y);
-                                            
-                                            if (guardFigure.figure?.canMove(newCell)
-                                            && target.x === newCell.x
-                                            && target.y === newCell.y
-                                            && (guardFigure.x !== newCell.x || guardFigure.y !== newCell.y)
-                                            ) {
-                                                // console.log('Coordinates of guard: ', newCell.x, newCell.y, guardFigure, guardFigure.x, guardFigure.y)
+                                if (this.color !== newCell.color) {
+                                    // console.log(target.x, target.y, newCell.x, newCell.y, guardFigure.x, guardFigure.y, guardFigure.figure?.canMove(newCell))
 
-                                                canMove = false;
-                                                // return;
-                                            }
-
-                                            // if (canMove === false && guardFigure.figure?.canMove(newCell) === false) {
-                                            //     canMove = true;
-                                            //     console.log(newCell.x, newCell.y, guardFigure.x, guardFigure.y, canMove, guardFigure.figure?.canMove(newCell))
-                                            // };
-                                        }
-                                    })
-                                })
+                                    if (guardFigure.figure?.canMove(newCell)
+                                    && (guardFigure.x !== newCell.x || guardFigure.y !== newCell.y)
+                                    ) {
+                                        canMove = false;
+                                        count += 1
+                                    }
+                                }
                             }
                         }
                     })
                 })
                 
+                if (count === 0) {
+                    canMove = true;
+                } else if (count > 0) {
+                    canMove = false
+                }
 
                 return canMove;
             }

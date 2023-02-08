@@ -136,6 +136,7 @@ export class Cell {
 
     isCheck(target: Cell) {
         const king = this.getEnemyKing(target) as Figure;
+        // console.log(target.x, target.y, king.cell.x, king.cell.y)
             
         if (target.figure?.canMove(king?.cell)) {
             this.board.checkFigure.length ? this.board.checkFigure.splice(0,1) : '';
