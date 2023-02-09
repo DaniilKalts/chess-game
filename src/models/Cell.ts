@@ -136,7 +136,6 @@ export class Cell {
 
     isCheck(target: Cell) {
         const king = this.getEnemyKing(target) as Figure;
-        // console.log(target.x, target.y, king.cell.x, king.cell.y)
             
         if (target.figure?.canMove(king?.cell)) {
             this.board.checkFigure.length ? this.board.checkFigure.splice(0,1) : '';
@@ -157,9 +156,25 @@ export class Cell {
             }
             target.setFigure(this.figure, absX, absY);
 
-            console.log(this.isCheck(target))
+            this.board.checkFigure.length ? this.board.checkFigure.splice(0,1) : '';
 
             this.figure = null;
+
+            const enemyKing = target.getEnemyKing(target) as Figure;
+            const cells = target.board.cells;
+
+            for (let i = 0; i < cells.length; i++) {
+                const row: Cell[] = cells[i];
+                for (let j = 0; j < row.length; j++) {
+                    const potentialFigure = row[j];
+                    if (potentialFigure.figure?.color !== enemyKing.color
+                    && potentialFigure.figure?.canMove(enemyKing.cell)) {
+                        this.board.checkFigure.push(potentialFigure.figure);
+                    }
+                }
+            }
+
+            console.log(this.board.checkFigure.length ? true : false)
         }
     }
 }

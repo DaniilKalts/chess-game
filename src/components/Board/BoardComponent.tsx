@@ -3,6 +3,7 @@ import { Board } from '../../models/Board';
 import { Cell } from '../../models/Cell';
 import { Player } from '../../models/Player';
 import CellComponent from '../CellComponent';
+import Modal from '../UI/Modal';
 import { Abs, BoardContainer, HorizontalAbs, VerticalAbs } from './Board.styles';
 
 interface BoardProps {
@@ -14,6 +15,7 @@ interface BoardProps {
 
 const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPlayer }) => {
   const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
+  const [isModal, setModal] = useState<boolean>(false);
 
   const abs = {
     a: 1,
@@ -53,6 +55,7 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPl
   function updateBoard() {
     const newBoard = board.getCopyBoard();
     setBoard(newBoard);
+    setModal(newBoard.checkFigure[0] ? true : false);
   }
 
   return (
@@ -89,6 +92,27 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPl
                 ))}
             </React.Fragment>
         ))}
+        {(board.checkFigure[0] && isModal) && 
+          <Modal
+          color={board.checkFigure[0].color}
+          isVisible={isModal}
+          title="There's a check!"
+          content={
+            <div>
+              <div className="figure-content">
+                <img className='modal__figure' alt={board.checkFigure[0].name as string} src={board.checkFigure[0].logo as string}/>
+                <div className="figure-info">
+                  <h6>Title: <span>{board.checkFigure[0].name}</span></h6>
+                  <h6>Coordinates: {board.movements[board.movements.length-1].coordinate}</h6>
+                </div>
+              </div>
+              <p>There's an enemy figure "{board.checkFigure[0].name}", on coordinated "{board.movements[board.movements.length-1].coordinate}", that is gonna eat the king! You can move on cells, that either protect the king or eat an attacking figure.</p>
+              <h5>Protect your King !!!</h5>
+            </div>
+          }
+          footer={<button onClick={() => setModal(false)}>Close</button>}
+          onClose={() => setModal(false)}
+        />}
     </BoardContainer>
   )
 };
