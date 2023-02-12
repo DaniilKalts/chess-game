@@ -1,9 +1,10 @@
 import React, { FC, useState, useEffect } from 'react'
 import { Board } from '../../models/Board';
 import { Cell } from '../../models/Cell';
+import { Coordinates } from '../../models/Coordinates';
 import { Player } from '../../models/Player';
 import CellComponent from '../CellComponent';
-import Modal from '../UI/Modal';
+import CheckModal from '../UI/CheckModal/CheckModal';
 import { Abs, BoardContainer, HorizontalAbs, VerticalAbs } from './Board.styles';
 
 interface BoardProps {
@@ -15,6 +16,7 @@ interface BoardProps {
 
 const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPlayer }) => {
   const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
+  const [checkCoordinates, setCheckCoordinates] = useState<string>('');
   const [isModal, setModal] = useState<boolean>(false);
 
   const abs = {
@@ -55,7 +57,12 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPl
   function updateBoard() {
     const newBoard = board.getCopyBoard();
     setBoard(newBoard);
-    setModal(newBoard.checkFigure[0] ? true : false);
+  
+    if (newBoard.checkFigure[0]) {
+      const coordinate = `${newBoard.checkFigure[0].cell.x}${newBoard.checkFigure[0].cell.y}`;
+      setModal(checkCoordinates === coordinate ? false : true);
+      setCheckCoordinates(coordinate);
+    }
   }
 
   return (
@@ -92,10 +99,9 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPl
                 ))}
             </React.Fragment>
         ))}
-        {(board.checkFigure[0] && isModal) && 
-          <Modal
+        {(board.checkFigure[0] && !board.isCheckAndMate.length && isModal) && 
+          <CheckModal
           color={board.checkFigure[0].color}
-          isVisible={isModal}
           title="There's a check!"
           content={
             <div>
@@ -103,14 +109,15 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPl
                 <img className='modal__figure' alt={board.checkFigure[0].name as string} src={board.checkFigure[0].logo as string}/>
                 <div className="figure-info">
                   <h6>Title: <span>{board.checkFigure[0].name}</span></h6>
-                  <h6>Coordinates: {board.movements[board.movements.length-1].coordinate}</h6>
+                  <h6>Coordinates: {Coordinates[board.checkFigure[0].cell.x]}{8-board.checkFigure[0].cell.y}</h6>
                 </div>
               </div>
-              <p>There's an enemy figure "{board.checkFigure[0].name}", on coordinated "{board.movements[board.movements.length-1].coordinate}", that is gonna eat the king! You can move on cells, that either protect the king or eat an attacking figure.</p>
+              <p>There's an enemy figure "{board.checkFigure[0].name}", on coordinated "{Coordinates[board.checkFigure[0].cell.x]}{8-board.checkFigure[0].cell.y}", that is gonna eat the king! You can move on cells, that either protect the king or eat an attacking figure.</p>
               <h5>Protect your King !!!</h5>
             </div>
           }
           footer={<button onClick={() => setModal(false)}>Close</button>}
+          coordinates={`${Coordinates[board.checkFigure[0].cell.x]}${8-board.checkFigure[0].cell.y}`}
           onClose={() => setModal(false)}
         />}
     </BoardContainer>

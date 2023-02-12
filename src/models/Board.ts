@@ -16,6 +16,7 @@ export class Board {
     movements: Movement[] = [];
     checkFigure: Figure[] = [];
     isChangingPawn: Figure[] = [];
+    isCheckAndMate: Figure[] = [];
 
     public initCells () {
         for (let i = 0; i < 8; i++) {
@@ -35,7 +36,6 @@ export class Board {
         const changingPawnCell = this.isChangingPawn[0].cell
         const cell = this.getCell(changingPawnCell.x, changingPawnCell.y);
         
-        
         if (changingPawnCell.figure?.color) {
             if (figure.name === 'Rook') {
                 cell.figure = new Rook(changingPawnCell.figure.color, cell);
@@ -48,10 +48,11 @@ export class Board {
             }
         }
 
-        const enemyKing = cell.getEnemyKing(cell);
+        const enemyKing = cell.getEnemyKing(cell) as King;
         if (enemyKing && cell.figure?.canMove(enemyKing.cell)) {
             this.checkFigure.length > 0 ? this.checkFigure.splice(0,1) : '';
             this.checkFigure.push(cell.figure);
+            enemyKing.wasUnderAttack = true;
         }
         
         this.isChangingPawn.splice(0,1);
@@ -65,6 +66,7 @@ export class Board {
         newBoard.movements = this.movements;
         newBoard.checkFigure = this.checkFigure;
         newBoard.isChangingPawn = this.isChangingPawn;
+        newBoard.isCheckAndMate = this.isCheckAndMate;
 
         return newBoard;
     }
@@ -123,13 +125,11 @@ export class Board {
                                         }
 
                                         for (let y = min + 1; y < max; y++) {
-                                            console.log(absX, y)
                                             const currentCell = this.getCell(absX, y);
     
                                             if (!currentCell.isEmpty()
                                             && currentCell.x !== selectedCell.x
                                             && currentCell.y !== selectedCell.y) {
-                                                console.log(currentCell.x, currentCell.y)
                                                 figuresCount += 1;
                                             }
     
@@ -147,13 +147,11 @@ export class Board {
                                         } 
 
                                         for (let y = min + 1; y < max; y++) {
-                                            // console.log(absX, y)
                                             const currentCell = this.getCell(absX, y);
     
                                             if (!currentCell.isEmpty()
                                             && currentCell.x !== selectedCell.x
                                             && currentCell.y !== selectedCell.y) {
-                                                // console.log(currentCell.x, currentCell.y)
                                                 figuresCount += 1;
                                             }
     
@@ -164,8 +162,6 @@ export class Board {
                                             }
                                         }
                                     }
-                                    
-                                    // console.log(figuresCount);
 
                                     if (target.x === potentialFigure.x
                                     && target.y === potentialFigure.y) {
@@ -183,7 +179,6 @@ export class Board {
 
                                         for (let x = minAbsX + 1; x < maxAbsX; x++) {
                                             const currentCell = this.getCell(x, potentialFigure.y);
-                                            // console.log(currentCell.x, currentCell.y)
                                             if (!currentCell.isEmpty()
                                             && currentCell.x !== selectedCell.x
                                             && currentCell.y === selectedCell.y) {
@@ -191,7 +186,6 @@ export class Board {
                                             }
                                         }
 
-                                        // console.log(figuresCount)
                                         if ((target.x === potentialFigure.x
                                         && target.y === potentialFigure.y)
                                         || (target.x !== potentialFigure.x
@@ -210,11 +204,9 @@ export class Board {
 
                                     for (let y = minAbsY + 1; y < maxAbsY; y++) {
                                         const currentCell = this.getCell(potentialFigure.x, y);
-                                        // console.log(currentCell.x, currentCell.y)
                                         if (!currentCell.isEmpty()
                                         && currentCell.x === selectedCell.x
                                         && currentCell.y !== selectedCell.y) {
-                                            console.log(currentCell.x, currentCell.y)
                                             figuresCount += 1;
                                         }
                                     }
@@ -226,7 +218,6 @@ export class Board {
                                         return true;
                                     }
 
-                                    // console.log(figuresCount)
                                     return figuresCount ? true : false;
                                 }
 
@@ -383,6 +374,141 @@ export class Board {
                 }
             }
         }
+    }
+
+    public deffensiveCells(selectedCell: Cell, checkFigure: Figure) {
+       let availableCells = [];
+
+        for (let i = 0; i < this.cells.length; i++) {
+            const row: Cell[] = this.cells[i];
+            for (let j = 0; j < row.length; j++) {
+                const target = row[j];
+                target.available = !!selectedCell?.figure?.canMove(target);
+
+                if (checkFigure && target.available && selectedCell) {
+                    let king = this.getFriendlyKing(selectedCell) as Figure;
+
+                    const bishopCheck = () => {
+                        if (Math.abs(checkFigure.cell.x - target.x) === Math.abs(checkFigure.cell.y - target.y)
+                        && Math.abs(king.cell.x - target.x) === Math.abs(king.cell.y - target.y)) {
+                            if (king.cell.y < checkFigure.cell.y
+                            && (target.y <= checkFigure.cell.y && target.y > king.cell.y)) {
+                                target.available = true;
+                            } else if (king.cell.y > checkFigure.cell.y
+                            && (target.y >= checkFigure.cell.y && target.y < king.cell.y)) {
+                                target.available = true;
+                            }
+                        }
+                    }
+
+                    const rookCheck = () => {
+                        if (target.x === checkFigure.cell.x && king.cell.x === target.x
+                        && Math.abs(checkFigure.cell.y - king.cell.y) > Math.abs(checkFigure.cell.y - target.y)) {                            
+                            if (king.cell.y < checkFigure.cell.y
+                            && (target.y <= checkFigure.cell.y && target.y > king.cell.y)) {
+                                target.available = true;
+                            } else if (king.cell.y > checkFigure.cell.y
+                            && (target.y >= checkFigure.cell.y && target.y < king.cell.y)) {
+                                target.available = true;
+                            }
+                        } 
+                            
+                        if (target.y === checkFigure.cell.y && king.cell.y === target.y
+                        && Math.abs(checkFigure.cell.x - king.cell.x) > Math.abs(checkFigure.cell.x - target.x)) {
+                            if (king.cell.x < checkFigure.cell.x
+                            && (target.x <= checkFigure.cell.x && target.x > king.cell.x)) {
+                                target.available = true;
+                            } else if (king.cell.x > checkFigure.cell.x
+                            && (target.x >= checkFigure.cell.x && target.x < king.cell.x)) {
+                                target.available = true;
+                            }
+                        } 
+
+                        return target.available;
+                    }
+
+                    const canAttackCheckFigure = () => {
+                        if (target.x === checkFigure.cell.x && target.y === checkFigure.cell.y) {
+                            target.available = true;
+                        }
+                        if (target.x === checkFigure.cell.x && target.y === checkFigure.cell.y) {
+                            target.available = true;
+                        }
+                    }
+
+                    if (checkFigure.name === FigureNames.QUEEN
+                        && selectedCell.figure?.name !== FigureNames.KING) {
+                        target.available = false;
+
+                        if (target.x === checkFigure.cell.x && target.y === checkFigure.cell.y) {
+                            target.available = true;
+                            availableCells.push(target);
+                            return
+                        }
+
+                        bishopCheck();
+
+                        if (target.available ) {
+                            if (checkFigure.cell.x === king.cell.x && target.x !== king.cell.x) {
+                                target.available = false;
+                            } else if (checkFigure.cell.y === king.cell.y && target.y !== king.cell.y) {
+                                target.available = false;
+                            }
+                        }
+
+                        const isRook = rookCheck(); 
+
+                        if (target.available && isRook) {
+                            if (target.y === king.cell.y && target.y === checkFigure.cell.y) {
+                                if (checkFigure.cell.x < king.cell.x) {
+                                    target.available = target.x > checkFigure.cell.x && target.x < king.cell.x;
+                                } else if (checkFigure.cell.x > king.cell.x) {
+                                    target.available = target.x < checkFigure.cell.x && target.x > king.cell.x;
+                                }
+                            }
+
+                            if (target.x === king.cell.x && target.x === checkFigure.cell.x) {
+                                if (checkFigure.cell.y < king.cell.y) {
+                                    target.available = target.y > checkFigure.cell.y && target.y < king.cell.y;
+                                } else if (checkFigure.cell.y > king.cell.y) {
+                                    target.available = target.y < checkFigure.cell.y && target.y > king.cell.y;
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (checkFigure.name === FigureNames.BISHOP
+                    && selectedCell.figure?.name !== FigureNames.KING) {
+                        target.available = false;
+                        bishopCheck();
+                    }
+                    
+                    if (checkFigure.name === FigureNames.ROOK
+                    && selectedCell.figure?.name !== FigureNames.KING) {
+                        target.available = false;
+                        rookCheck();
+                    }
+
+                    if (checkFigure.name === FigureNames.KNIGHT
+                    && selectedCell.figure?.name !== FigureNames.KING) {
+                        target.available = false;
+                        canAttackCheckFigure();
+                    }
+
+                    if (checkFigure.name === FigureNames.PAWN
+                    && selectedCell.figure?.name !== FigureNames.KING) {
+                        target.available = false;
+                        canAttackCheckFigure();
+                    }
+                }
+
+                if (target.available) {
+                    availableCells.push(availableCells.length);
+                }
+            }
+        };
+
+        return availableCells;
     }
 
     public getCell(x: number, y: number) {

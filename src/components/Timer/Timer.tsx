@@ -1,15 +1,26 @@
 import React, { FC, useState, useRef, useEffect } from 'react'
 import { Colors } from '../../models/Colors';
 import { Player } from '../../models/Player';
+import TimeOverModal from '../UI/TimeOverModal/TimeOverModal';
+
+import chessImage from '../../assets/chess.png'
 
 import { TimerButton, TimerContainer, TimerTime } from './Timer.styles'
+import { Board } from '../../models/Board';
+import { Pause } from '../../App.styles';
+
+import pause from '../../assets/pause.png';
+import play from '../../assets/play.png';
+import PauseModal from '../UI/PauseModal/PauseModal';
+
 
 interface TimerProps {
-    currentPlayer: Player | null,
-    restart: () => void
+  board: Board,
+  currentPlayer: Player | null,
+  restart: () => void
 }
 
-const Timer: FC<TimerProps> = ({ currentPlayer, restart }) => {
+const Timer: FC<TimerProps> = ({ board, currentPlayer, restart }) => {
   const [whiteTime, setWhiteTime] = useState(300);
   const [blackTime, setBlackTime] = useState(300);
 
@@ -21,6 +32,10 @@ const Timer: FC<TimerProps> = ({ currentPlayer, restart }) => {
    
   const timer = useRef<null | ReturnType<typeof setInterval>>(null);
 
+  const [modal, setModal] = useState<boolean>(false);
+  const [isHistoryModal, setIsHistoryModal] = useState<boolean>(false);
+  const [isPause, setIsPause] = useState<boolean>(false);
+
   useEffect(() => {
     startTimer();
   }, [currentPlayer])
@@ -30,6 +45,7 @@ const Timer: FC<TimerProps> = ({ currentPlayer, restart }) => {
     if (whiteTime === 0) {
         if (timer.current) {
             clearInterval(timer.current);
+            setModal(true);
         }
 
         timer.current = null
@@ -40,6 +56,7 @@ const Timer: FC<TimerProps> = ({ currentPlayer, restart }) => {
     if (blackTime === 0) {
         if (timer.current) {
             clearInterval(timer.current);
+            setModal(true);
         }
 
         timer.current = null
@@ -76,11 +93,52 @@ const Timer: FC<TimerProps> = ({ currentPlayer, restart }) => {
     restart();
   }
 
+  const stopTimer = () => {
+    if (isPause) {
+      setIsPause(false);
+      startTimer();
+    } else if (!isPause && timer.current) {
+      setIsPause(true);
+      clearInterval(timer.current);
+    }
+  }
+
   return (
     <TimerContainer>
         <TimerTime color={'#fff'}>White: <span>{whiteMinutes} : {whiteSeconds}</span></TimerTime>
         <TimerTime color={'#222'}>Black: <span>{blackMinutes} : {blackSeconds}</span></TimerTime>
         <TimerButton onClick={handleRestart}>Restart Game</TimerButton>
+        {((whiteTime === 0 || blackTime === 0) && modal) &&
+          <TimeOverModal 
+            board={board}
+            isHistoryModal={isHistoryModal}
+            setIsHistoryModal={setIsHistoryModal}
+            color={whiteTime === 0 ? Colors.WHITE : Colors.BLACK}
+            title="The game is over"
+            content={
+              <div className='figure-content'>
+                <img src={chessImage} alt="chessImage" className='chessImage' />
+                <h4>The {whiteTime === 0 ? 'black' : 'white'} side has won!</h4>
+                <h6>Because time of {whiteTime === 0 ? 'white' : 'black'} side is over!</h6>
+                <h6>Don't worry! Try again and beat the opposite side!</h6>
+                <button onClick={() => setIsHistoryModal(true)}>View History</button>
+              </div>
+            }
+            footer={<button onClick={() => setModal(false)}>Close</button>}
+            onClose={() => setModal(false)}
+          />
+        }
+        {isPause &&
+          <PauseModal 
+            content={
+              <div className='figure-content'>
+                <img src={play} alt="play" onClick={stopTimer} />
+              </div>
+            }
+            onClose={() => stopTimer()}
+          />
+        }
+        <Pause src={pause} alt={'pause'} onClick={stopTimer} />
     </TimerContainer>
   )
 }

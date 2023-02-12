@@ -23,7 +23,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // console.log('well....', board)
     setIsChangingPawn(board.isChangingPawn[0]);
     if (board.isChangingPawn[0] && board.isChangingPawn[0]?.name === FigureNames.PAWN) {
       setIsChoosingFigure(true);

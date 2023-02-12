@@ -18,7 +18,7 @@ const ChessInfo: FC<InfoProps> = ({ restart, board }) => {
     <Info>
         <InfoTitle>Chess<span>Game</span></InfoTitle>
         <CurrentPlayer color={player?.color}>Current Player: <span>{player?.color}</span></CurrentPlayer>
-        <Timer currentPlayer={player} restart={restart} />
+        <Timer currentPlayer={player} restart={restart} board={board} />
         <MovementsHistory board={board} />
     </Info>
   )

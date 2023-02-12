@@ -3,8 +3,13 @@ import { Colors } from "../Colors";
 import { Figure, FigureNames } from "./Figure";
 import blackLogo from '../../assets/black-king.png'
 import whiteLogo from '../../assets/white-king.png'
+import { Rook } from "./Rook";
 
 export class King extends Figure {
+
+    isFirstStep: boolean = true;
+    wasUnderAttack: boolean = false;
+
     constructor(color: Colors, cell: Cell) {
         super(color, cell);
         this.logo = color === Colors.BLACK ? blackLogo : whiteLogo;
@@ -14,6 +19,47 @@ export class King extends Figure {
     canMove(target: Cell): boolean {
         if(!super.canMove(target)){            
             return false;
+        }
+        
+        if (this.isFirstStep && (target.x === 6 && target.y === this.cell.y)
+        && !this.wasUnderAttack) {
+            let count = 0;
+            const rook = target.board.getCell(7, this.cell.y).figure as Rook;
+
+            for (let x = 5; x < 7; x++) {
+                if (target.board.getCell(x, this.cell.y).isEmpty()) {
+                    count += 1;
+                }
+            }
+
+            const isSafe = this.cell.isSafe(target.board.getCell(6, this.cell.y), this.color);
+
+            if (count === 2 && rook.isFirstStep 
+            && this.canMove(target.board.getCell(5, this.cell.y))
+            && isSafe
+            ) {
+                return true;    
+            }
+        }
+
+        if (this.isFirstStep && (target.x === 2 && target.y === this.cell.y)
+        && !this.wasUnderAttack) {
+            let count = 0;
+            const rook = target.board.getCell(0, this.cell.y).figure as Rook;
+
+            for (let x = 1; x < 4; x++) {
+                if (target.board.getCell(x, this.cell.y).isEmpty()) {
+                    count += 1;
+                }
+            }
+
+            const isSafe = this.cell.isSafe(target.board.getCell(2, this.cell.y), this.color);
+
+            if (count === 3 && rook.isFirstStep
+            && this.canMove(target.board.getCell(3, this.cell.y))
+            && isSafe) {
+                return true;    
+            }
         }
         
         if ((Math.abs((this.cell.x + this.cell.y) - (target.x + target.y))) <= 2
@@ -38,13 +84,11 @@ export class King extends Figure {
                     cellArray.forEach(guardFigure => {
                         
                         if(guardFigure.figure && this.color !== guardFigure.figure?.color){  
-                            // const guardFigure = this.cell.board.getCell(cell.x, cell.y);
 
                             if (guardFigure.figure.canMove(target)
                             && guardFigure.figure.name !== FigureNames.PAWN) {
                                 canMove = false;
                                 count += 1
-                                // console.log(count, target.x, target.y, guardFigure.x, guardFigure.y, canMove)
                             }
     
                             if(guardFigure.figure.name === FigureNames.PAWN
@@ -62,8 +106,6 @@ export class King extends Figure {
                                     canMove = false;
                                     count += 1;
                                 }
-                                
-                                console.log(count, target.x, target.y, guardFigure.x, guardFigure.y, canMove)
                             } 
 
                             if(guardFigure.figure.name === FigureNames.PAWN
@@ -73,12 +115,10 @@ export class King extends Figure {
                                 && guardFigure.y - target.y === -1) {
                                     canMove = false;
                                     count += 1
-                                    console.log(count, target.x, target.y, guardFigure.x, guardFigure.y, canMove)
                                 } else if (guardFigure.figure.color === Colors.WHITE
                                 && guardFigure.y - target.y === 1) {
                                     canMove = false;
                                     count += 1
-                                    console.log(count, target.x, target.y, guardFigure.x, guardFigure.y, canMove)
                                 }
                             }
                             
@@ -86,7 +126,6 @@ export class King extends Figure {
                                 const newCell = new Cell(this.cell.board, target.x, target.y, target.figure.color, null);
 
                                 if (this.color !== newCell.color) {
-                                    // console.log(target.x, target.y, newCell.x, newCell.y, guardFigure.x, guardFigure.y, guardFigure.figure?.canMove(newCell))
 
                                     if (guardFigure.figure?.canMove(newCell)
                                     && (guardFigure.x !== newCell.x || guardFigure.y !== newCell.y)
@@ -138,5 +177,10 @@ export class King extends Figure {
         }
 
         return false;
+    };
+
+    moveFigure(target: Cell): void {
+        super.moveFigure(target);
+        this.isFirstStep = false;
     }
 }

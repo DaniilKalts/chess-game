@@ -2,7 +2,9 @@ import { Board } from "./Board";
 import { Colors } from "./Colors";
 import { Coordinates } from "./Coordinates";
 import { Figure, FigureNames } from "./figures/Figure";
+import { King } from "./figures/King";
 import { Queen } from "./figures/Queen";
+import { Rook } from "./figures/Rook";
 
 export class Cell {
     readonly x: number;
@@ -99,12 +101,10 @@ export class Cell {
             && figure.cell.y === 7) {
                 this.board.isChangingPawn.length ? this.board.isChangingPawn.splice(0,1) : '';
                 this.board.isChangingPawn.push(figure);
-                console.log(this.board.isChangingPawn)
             } else if (figure.color === Colors.WHITE
                 && figure.cell.y === 0) {
                 this.board.isChangingPawn.length ? this.board.isChangingPawn.splice(0,1) : '';
                 this.board.isChangingPawn.push(figure);
-                console.log(this.board.isChangingPawn)
             }
         } 
                 
@@ -135,11 +135,12 @@ export class Cell {
     }
 
     isCheck(target: Cell) {
-        const king = this.getEnemyKing(target) as Figure;
+        const king = this.getEnemyKing(target) as King;
             
         if (target.figure?.canMove(king?.cell)) {
             this.board.checkFigure.length ? this.board.checkFigure.splice(0,1) : '';
             this.board.checkFigure.push(target.figure);
+            king.wasUnderAttack = true;
             return true;
         }
 
@@ -147,8 +148,45 @@ export class Cell {
         return false;
     }
 
+    isSafe(target: Cell, color: Colors) {
+        const cells = this.board.cells;
+
+        for (let i = 0; i < cells.length; i++) {
+            const row: Cell[] = cells[i];
+            for (let j = 0; j < row.length; j++) {
+                const currentCell = row[j];
+                if (currentCell.figure 
+                && currentCell.figure.color !== color) {
+                    if (currentCell.figure.canMove(target)) {
+                        return false;
+                    }
+                }
+            }
+        };
+
+        return true;
+    }
+
     moveFigure(target: Cell, absX: number, absY: number) {
         if (this.figure && this.figure?.canMove(target)) {   
+            const cells = target.board.cells;
+            
+            if (this.figure.name === FigureNames.KING) {
+                if (Math.abs(target.x - this.x) === 2
+                && target.x > this.x) {
+                    const rookCell = this.board.getCell(5, this.y);
+                    rookCell.figure = new Rook(this.figure.color, rookCell);
+                    this.board.getCell(7, this.y).figure = null;
+                }
+
+                if (Math.abs(target.x - this.x) === 2
+                && target.x < this.x) {
+                    const rookCell = this.board.getCell(3, this.y);
+                    rookCell.figure = new Rook(this.figure.color, rookCell);
+                    this.board.getCell(0, this.y).figure = null;
+                }
+            }
+
             this.figure.moveFigure(target);
 
             if (target.figure) {
@@ -160,8 +198,10 @@ export class Cell {
 
             this.figure = null;
 
-            const enemyKing = target.getEnemyKing(target) as Figure;
-            const cells = target.board.cells;
+            const enemyKing = target.getEnemyKing(target) as King;
+            let checkAndMate = false;
+            let enemyKingSteps = 0;
+            let defensiveFigures = 0;
 
             for (let i = 0; i < cells.length; i++) {
                 const row: Cell[] = cells[i];
@@ -170,11 +210,38 @@ export class Cell {
                     if (potentialFigure.figure?.color !== enemyKing.color
                     && potentialFigure.figure?.canMove(enemyKing.cell)) {
                         this.board.checkFigure.push(potentialFigure.figure);
+                        enemyKing.wasUnderAttack = true;
+                    }
+
+                    if (enemyKing.canMove(potentialFigure)) {
+                        enemyKingSteps += 1;
                     }
                 }
+            };
+
+            if (this.board.checkFigure.length) {
+                for (let i = 0; i < cells.length; i++) {
+                    const row: Cell[] = cells[i];
+                    for (let j = 0; j < row.length; j++) {
+                        const potentialFigure = row[j];
+
+                        if (potentialFigure.figure?.color === enemyKing.color) {
+                            if (this.board.deffensiveCells(potentialFigure, this.board.checkFigure[0])?.length) {
+                                defensiveFigures += this.board.deffensiveCells(potentialFigure, this.board.checkFigure[0])?.length as number;
+                            }
+                        }
+                    }
+                };
             }
 
-            console.log(this.board.checkFigure.length ? true : false)
+            // console.log(this.board.checkFigure.length ? true : false, enemyKingSteps, defensiveFigures);
+
+            checkAndMate = this.board.checkFigure.length ? true : false;
+
+            if (checkAndMate && !enemyKingSteps && !defensiveFigures) {
+                this.board.isCheckAndMate.push(this.board.checkFigure[0]);
+                alert('Шах и мат :D')
+            }
         }
     }
 }

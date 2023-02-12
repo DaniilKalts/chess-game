@@ -1,19 +1,20 @@
 import React, { FC } from 'react'
-import { Colors } from '../../models/Colors';
-import { ModalBody, ModalClose, ModalContent, ModalDialog, ModalFooter, ModalHeader, ModalTitle } from './Modal.styles';
+import { Colors } from '../../../models/Colors';
+import { ModalBody, ModalClose, ModalContent, CheckDialog, ModalFooter, ModalHeader, ModalTitle } from '../Modal.styles';
 
 interface ModalProps {
     color: Colors,
-    isVisible: boolean,
     title: string,
     content: any,
     footer: any, 
+    coordinates: string,
     onClose: () => void
 }
 
-const Modal: FC<ModalProps> = ({ color, isVisible = false, title, content, footer, onClose }) => {
+const CheckModal: FC<ModalProps> = ({ color, title, content, footer, onClose }) => {
+
     return (
-        <ModalDialog onClick={(e: React.SyntheticEvent) => e.stopPropagation()} color={color}>
+        <CheckDialog onClick={(e: React.SyntheticEvent) => e.stopPropagation()} color={color}>
             <ModalHeader>
             <ModalTitle>{title}</ModalTitle>
                 <ModalClose onClick={onClose}>
@@ -24,8 +25,8 @@ const Modal: FC<ModalProps> = ({ color, isVisible = false, title, content, foote
             <ModalContent>{content}</ModalContent>
             </ModalBody>
             {footer && <ModalFooter>{footer}</ModalFooter>}
-        </ModalDialog>
+        </CheckDialog>
     )
 }
 
-export default Modal;
+export default CheckModal;
