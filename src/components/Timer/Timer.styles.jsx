@@ -6,6 +6,13 @@ export const TimerContainer = styled.div`
     display: flex;
     justify-content: center;
     flex-direction: column;
+
+    .side-figures {
+        margin-bottom: 0.5rem;
+        img {
+            width: 4rem;
+        }
+    }
 `
 
 export const TimerTime = styled.h5`

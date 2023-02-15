@@ -5,6 +5,24 @@ import TimeOverModal from '../UI/TimeOverModal/TimeOverModal';
 
 import chessImage from '../../assets/chess.png'
 
+import blackKing from '../../assets/black-king.png'
+import whiteKing from '../../assets/white-king.png'
+
+import blackPawn from '../../assets/black-pawn.png'
+import whitePawn from '../../assets/white-pawn.png'
+
+import blackKnight from '../../assets/black-knight.png'
+import whiteKnight from '../../assets/white-knight.png'
+
+import blackBishop from '../../assets/black-bishop.png'
+import whiteBishop from '../../assets/white-bishop.png'
+
+import blackQueen from '../../assets/black-queen.png'
+import whiteQueen from '../../assets/white-queen.png'
+
+import blackRook from '../../assets/black-rook.png'
+import whiteRook from '../../assets/white-rook.png'
+
 import { TimerButton, TimerContainer, TimerTime } from './Timer.styles'
 import { Board } from '../../models/Board';
 import { Pause } from '../../App.styles';
@@ -17,10 +35,11 @@ import PauseModal from '../UI/PauseModal/PauseModal';
 interface TimerProps {
   board: Board,
   currentPlayer: Player | null,
-  restart: () => void
+  restart: () => void,
+  setTime: () => void
 }
 
-const Timer: FC<TimerProps> = ({ board, currentPlayer, restart }) => {
+const Timer: FC<TimerProps> = ({ board, currentPlayer, restart, setTime }) => {
   const [whiteTime, setWhiteTime] = useState(300);
   const [blackTime, setBlackTime] = useState(300);
 
@@ -38,6 +57,12 @@ const Timer: FC<TimerProps> = ({ board, currentPlayer, restart }) => {
 
   useEffect(() => {
     startTimer();
+
+    if (timer.current
+    && board.isCheckAndMate.length) {
+      clearInterval(timer.current);
+      timer.current = null;
+    }    
   }, [currentPlayer])
 
 
@@ -46,6 +71,8 @@ const Timer: FC<TimerProps> = ({ board, currentPlayer, restart }) => {
         if (timer.current) {
             clearInterval(timer.current);
             setModal(true);
+
+            setTime();
         }
 
         timer.current = null
@@ -57,6 +84,8 @@ const Timer: FC<TimerProps> = ({ board, currentPlayer, restart }) => {
         if (timer.current) {
             clearInterval(timer.current);
             setModal(true);
+
+            setTime();
         }
 
         timer.current = null
@@ -88,8 +117,8 @@ const Timer: FC<TimerProps> = ({ board, currentPlayer, restart }) => {
   }
 
   const handleRestart = () => {
-    setWhiteTime(300);
-    setBlackTime(300);
+    setWhiteTime(2);
+    setBlackTime(2);
     restart();
   }
 
@@ -117,7 +146,14 @@ const Timer: FC<TimerProps> = ({ board, currentPlayer, restart }) => {
             title="The game is over"
             content={
               <div className='figure-content'>
-                <img src={chessImage} alt="chessImage" className='chessImage' />
+                <div className="side-figures">
+                  <img src={!blackTime ? whitePawn : blackPawn} alt="chessImage" className='chessImage' />
+                  <img src={!blackTime ? whiteRook : blackRook} alt="chessImage" className='chessImage' />
+                  <img src={!blackTime ? whiteBishop : blackBishop} alt="chessImage" className='chessImage' />
+                  <img src={!blackTime ? whiteKing : blackKing} alt="chessImage" className='chessImage' />
+                  <img src={!blackTime ? whiteQueen : blackQueen} alt="chessImage" className='chessImage' />
+                  <img src={!blackTime ? whiteKnight : blackKnight} alt="chessImage" className='chessImage' />
+                </div>
                 <h4>The {whiteTime === 0 ? 'black' : 'white'} side has won!</h4>
                 <h6>Because time of {whiteTime === 0 ? 'white' : 'black'} side is over!</h6>
                 <h6>Don't worry! Try again and beat the opposite side!</h6>

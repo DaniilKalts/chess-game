@@ -55,6 +55,7 @@ export const HistoryWrapper = styled.div`
   .history-body {
     display: flex;
     flex-wrap: wrap;
+    width: 12rem;
   }
 
   .figure-content{

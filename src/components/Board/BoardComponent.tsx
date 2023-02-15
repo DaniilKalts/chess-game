@@ -5,20 +5,46 @@ import { Coordinates } from '../../models/Coordinates';
 import { Player } from '../../models/Player';
 import CellComponent from '../CellComponent';
 import CheckModal from '../UI/CheckModal/CheckModal';
+import WinModal from '../UI/WinModal/WinModal';
+
+import chessImage from '../../assets/chess.png';
+
+import blackKing from '../../assets/black-king.png'
+import whiteKing from '../../assets/white-king.png'
+
+import blackPawn from '../../assets/black-pawn.png'
+import whitePawn from '../../assets/white-pawn.png'
+
+import blackKnight from '../../assets/black-knight.png'
+import whiteKnight from '../../assets/white-knight.png'
+
+import blackBishop from '../../assets/black-bishop.png'
+import whiteBishop from '../../assets/white-bishop.png'
+
+import blackQueen from '../../assets/black-queen.png'
+import whiteQueen from '../../assets/white-queen.png'
+
+import blackRook from '../../assets/black-rook.png'
+import whiteRook from '../../assets/white-rook.png'
+
 import { Abs, BoardContainer, HorizontalAbs, VerticalAbs } from './Board.styles';
+import { Colors } from '../../models/Colors';
 
 interface BoardProps {
     board: Board;
     setBoard: (board: Board) => void;
     currentPlayer: Player | null;
-    swapPlayer: () => void
+    swapPlayer: () => void,
+    isTime: boolean,
+    isChoosingFigure: boolean
 }
 
-const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPlayer }) => {
+const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPlayer, isTime, isChoosingFigure }) => {
   const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
   const [checkCoordinates, setCheckCoordinates] = useState<string>('');
   const [isModal, setModal] = useState<boolean>(false);
-
+  const [isHistoryModal, setIsHistoryModal] = useState<boolean>(false);
+  
   const abs = {
     a: 1,
     b: 2,
@@ -31,6 +57,10 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPl
   }
 
   function click(cell: Cell) {
+    if (!isTime) {
+      return
+    }
+
     if (selectedCell && selectedCell !== cell && selectedCell.figure?.canMove(cell)) {
         if (cell.available) {
           selectedCell.moveFigure(cell, cell.x, 8-cell.y);
@@ -46,8 +76,24 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPl
 
   useEffect(() => {
     highlightCells();
+    
+    for (let i = 0; i < board.cells.length; i++) {
+      const row: Cell[] = board.cells[i];
+      for (let j = 0; j < row.length; j++) {
+          const potentialFigure = row[j];
+          if (potentialFigure.available
+          && !selectedCell?.figure?.canMove(potentialFigure)) {
+            potentialFigure.available = false;
+          }
+      }
+  };
   }, [selectedCell])
   
+  useEffect(() => {
+    if (!isChoosingFigure) {
+        updateBoard();
+    }
+  }, [isChoosingFigure])
 
   function highlightCells() {
     board.highlightCells(selectedCell);
@@ -99,6 +145,7 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPl
                 ))}
             </React.Fragment>
         ))}
+
         {(board.checkFigure[0] && !board.isCheckAndMate.length && isModal) && 
           <CheckModal
           color={board.checkFigure[0].color}
@@ -119,6 +166,33 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPl
           footer={<button onClick={() => setModal(false)}>Close</button>}
           coordinates={`${Coordinates[board.checkFigure[0].cell.x]}${8-board.checkFigure[0].cell.y}`}
           onClose={() => setModal(false)}
+        />}
+
+        {(board.checkFigure.length && board.isCheckAndMate.length && isModal) && 
+          <WinModal
+            board={board}
+            isHistoryModal={isHistoryModal}
+            setIsHistoryModal={setIsHistoryModal}
+            color={board.checkFigure[0].color}
+            title={`The ${board.checkFigure[0].color} side has won!`}
+            content={
+              <div className='figure-content'>
+                <div className="side-figures">
+                  <img src={board.checkFigure[0].color === Colors.WHITE ? whitePawn : blackPawn} alt="chessImage" className='chessImage' />
+                  <img src={board.checkFigure[0].color === Colors.WHITE ? whiteRook : blackRook} alt="chessImage" className='chessImage' />
+                  <img src={board.checkFigure[0].color === Colors.WHITE ? whiteBishop : blackBishop} alt="chessImage" className='chessImage' />
+                  <img src={board.checkFigure[0].color === Colors.WHITE ? whiteKing : blackKing} alt="chessImage" className='chessImage' />
+                  <img src={board.checkFigure[0].color === Colors.WHITE ? whiteQueen : blackQueen} alt="chessImage" className='chessImage' />
+                  <img src={board.checkFigure[0].color === Colors.WHITE ? whiteKnight : blackKnight} alt="chessImage" className='chessImage' />
+                </div>
+                <h4>The {board.checkFigure[0].color} side has won!</h4>
+                <h6>Because there's check and mate by {board.checkFigure[0].name}!</h6>
+                <h6>Don't worry! Try again and beat the opposite side!</h6>
+                <button onClick={() => setIsHistoryModal(true)}>View History</button>
+              </div>
+            }
+            footer={<button onClick={() => setModal(false)}>Close</button>}
+            onClose={() => setModal(false)}
         />}
     </BoardContainer>
   )

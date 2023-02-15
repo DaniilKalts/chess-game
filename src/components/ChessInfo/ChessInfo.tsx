@@ -7,10 +7,11 @@ import { CurrentPlayer, Info, InfoTitle } from './ChessInfo.styles';
 
 interface InfoProps {
   restart: () => void,
-  board: Board
+  board: Board,
+  setTime: () => void
 }
 
-const ChessInfo: FC<InfoProps> = ({ restart, board }) => {
+const ChessInfo: FC<InfoProps> = ({ restart, board, setTime }) => {
   
   const player = useContext(PlayerContext);
   
@@ -18,7 +19,7 @@ const ChessInfo: FC<InfoProps> = ({ restart, board }) => {
     <Info>
         <InfoTitle>Chess<span>Game</span></InfoTitle>
         <CurrentPlayer color={player?.color}>Current Player: <span>{player?.color}</span></CurrentPlayer>
-        <Timer currentPlayer={player} restart={restart} board={board} />
+        <Timer currentPlayer={player} restart={restart} board={board} setTime={setTime} />
         <MovementsHistory board={board} />
     </Info>
   )

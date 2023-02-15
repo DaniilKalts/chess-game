@@ -161,6 +161,22 @@ export class King extends Figure {
 
                 if ((checkFigure.name === FigureNames.ROOK || checkFigure.name === FigureNames.QUEEN)
                 && (target.y === checkFigure.cell.y || target.x === checkFigure.cell.x)) {
+
+                    if (!checkFigure.canMove(target)) {
+                        if (target.x === checkFigure.cell.x
+                        && this.cell.x !== checkFigure.cell.x
+                        && this.cell.board.getCell(target.x, Math.min(target.y, checkFigure.cell.y) + 1).figure) {
+                            return true;
+                        }
+
+                        if (target.y === checkFigure.cell.y
+                        && this.cell.y !== checkFigure.cell.y
+                        && this.cell.board.getCell(Math.min(target.x, checkFigure.cell.x) + 1, target.y).figure
+                        ) {
+                            return true;
+                        }
+                    }
+
                     return false;
                 }
 

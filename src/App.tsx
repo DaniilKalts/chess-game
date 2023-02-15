@@ -17,6 +17,7 @@ function App() {
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
   const [isChangingPawn, setIsChangingPawn] = useState<Figure | null>(null);
   const [isChoosingFigure, setIsChoosingFigure] = useState<boolean>(false);
+  const [isTime, setIsTime] = useState<boolean>(true);
 
   useEffect(() => {
     restart();
@@ -35,6 +36,7 @@ function App() {
     newBoard.addFigures();
     setBoard(newBoard);
     setCurrentPlayer(whitePlayer);
+    setIsTime(true);
   }
 
   function swapPlayer() {
@@ -51,13 +53,15 @@ function App() {
       value={currentPlayer}
     >
       <div className="app">
-        <ChessInfo restart={restart} board={board} />
+        <ChessInfo restart={restart} board={board} setTime={() => setIsTime(false)} />
         <ChooseFigure setFigure={changeFigure} isChangingPawn={isChangingPawn} isVisible={isChoosingFigure}></ChooseFigure>
         <BoardComponent
           board={board}
           setBoard={setBoard}
           currentPlayer={currentPlayer}
           swapPlayer={swapPlayer}
+          isTime={isTime}
+          isChoosingFigure={isChoosingFigure}
         />
         <EatenFigures 
           lostWhiteFigures={board.lostWhiteFigures} 

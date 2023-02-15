@@ -207,14 +207,11 @@ export class Cell {
                 const row: Cell[] = cells[i];
                 for (let j = 0; j < row.length; j++) {
                     const potentialFigure = row[j];
+                    
                     if (potentialFigure.figure?.color !== enemyKing.color
                     && potentialFigure.figure?.canMove(enemyKing.cell)) {
                         this.board.checkFigure.push(potentialFigure.figure);
                         enemyKing.wasUnderAttack = true;
-                    }
-
-                    if (enemyKing.canMove(potentialFigure)) {
-                        enemyKingSteps += 1;
                     }
                 }
             };
@@ -224,11 +221,20 @@ export class Cell {
                     const row: Cell[] = cells[i];
                     for (let j = 0; j < row.length; j++) {
                         const potentialFigure = row[j];
+                        const checkFigure = this.board.checkFigure[0] as Figure;
 
                         if (potentialFigure.figure?.color === enemyKing.color) {
                             if (this.board.deffensiveCells(potentialFigure, this.board.checkFigure[0])?.length) {
                                 defensiveFigures += this.board.deffensiveCells(potentialFigure, this.board.checkFigure[0])?.length as number;
                             }
+                            
+                            if (potentialFigure.figure.canMove(checkFigure.cell)) {
+                                defensiveFigures += 1;
+                            }
+                        }
+
+                        if (enemyKing.canMove(potentialFigure)) {                            
+                            enemyKingSteps += 1;
                         }
                     }
                 };
@@ -237,11 +243,13 @@ export class Cell {
             // console.log(this.board.checkFigure.length ? true : false, enemyKingSteps, defensiveFigures);
 
             checkAndMate = this.board.checkFigure.length ? true : false;
+            console.log(checkAndMate, enemyKingSteps, defensiveFigures);
 
             if (checkAndMate && !enemyKingSteps && !defensiveFigures) {
+                console.log(checkAndMate, enemyKingSteps, defensiveFigures);
                 this.board.isCheckAndMate.push(this.board.checkFigure[0]);
-                alert('Шах и мат :D')
-            }
+            } 
         }
     }
 }
+

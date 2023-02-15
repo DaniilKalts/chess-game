@@ -1,10 +1,10 @@
-import React, { FC, useState } from 'react'
-import { Board } from '../../../models/Board';
-import { Colors } from '../../../models/Colors';
-import HistoryModal from '../HistoryModal/HistoryModal';
-import { ModalBody, ModalClose, ModalContent, TimeDialog, ModalFooter, ModalHeader, ModalTitle, TimeWrapper } from '../Modal.styles';
+import React, { FC } from 'react'
+import { Board } from '../../../models/Board'
+import { Colors } from '../../../models/Colors'
+import HistoryModal from '../HistoryModal/HistoryModal'
+import { ModalBody, ModalClose, ModalContent, ModalFooter, ModalHeader, ModalTitle, TimeDialog, TimeWrapper } from './WinModal.styles'
 
-interface ModalProps {
+type ModalProps = {
     board: Board,
     isHistoryModal: boolean,
     setIsHistoryModal: any,
@@ -15,9 +15,10 @@ interface ModalProps {
     onClose: () => void
 }
 
-const TimeOverModal: FC<ModalProps> = ({ board, isHistoryModal, setIsHistoryModal, color, title, content, footer, onClose }) => {
-    return (
-        <>
+const WinModal: FC<ModalProps> = ({ board, isHistoryModal, setIsHistoryModal, color, title, content, footer, onClose }) => {
+  return (
+    <>
+
         <TimeDialog onClick={(e: React.SyntheticEvent) => e.stopPropagation()} color={color}>
             <TimeWrapper color={color}>
                 <ModalHeader>
@@ -34,7 +35,7 @@ const TimeOverModal: FC<ModalProps> = ({ board, isHistoryModal, setIsHistoryModa
         </TimeDialog>
 
         {isHistoryModal && 
-        <HistoryModal 
+        <HistoryModal
             setIsHistoryModal={setIsHistoryModal}   
             color="#627891"
             title="History of movements"
@@ -53,8 +54,9 @@ const TimeOverModal: FC<ModalProps> = ({ board, isHistoryModal, setIsHistoryModa
             footer={<button onClick={() => setIsHistoryModal(false)}>Close</button>}
             onClose={() => setIsHistoryModal(false)}
         />}
-        </>
-    )
+    
+    </>
+  )
 }
 
-export default TimeOverModal;
+export default WinModal;

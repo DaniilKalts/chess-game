@@ -35,6 +35,7 @@ export class Board {
     public changePawn(figure: any){
         const changingPawnCell = this.isChangingPawn[0].cell
         const cell = this.getCell(changingPawnCell.x, changingPawnCell.y);
+        const enemyKing = cell.getEnemyKing(cell) as King;
         
         if (changingPawnCell.figure?.color) {
             if (figure.name === 'Rook') {
@@ -47,8 +48,7 @@ export class Board {
                 cell.figure = new Bishop(changingPawnCell.figure.color, cell);
             }
         }
-
-        const enemyKing = cell.getEnemyKing(cell) as King;
+        
         if (enemyKing && cell.figure?.canMove(enemyKing.cell)) {
             this.checkFigure.length > 0 ? this.checkFigure.splice(0,1) : '';
             this.checkFigure.push(cell.figure);
@@ -56,6 +56,50 @@ export class Board {
         }
         
         this.isChangingPawn.splice(0,1);
+
+        const cells = this.cells;
+        let checkAndMate = false;
+        let enemyKingSteps = 0;
+        let defensiveFigures = 0;
+
+        if (this.checkFigure.length) {
+            for (let i = 0; i < cells.length; i++) {
+                const row: Cell[] = cells[i];
+                for (let j = 0; j < row.length; j++) {
+                    const potentialFigure = row[j];
+                    const checkFigure = this.checkFigure[0] as Figure;
+
+                    if (potentialFigure.figure?.color === enemyKing.color) {
+                        if (this.deffensiveCells(potentialFigure, this.checkFigure[0])?.length) {
+                            defensiveFigures += this.deffensiveCells(potentialFigure, this.checkFigure[0])?.length as number;
+                        }
+                        
+                        if (potentialFigure.figure.canMove(checkFigure.cell)) {
+                            defensiveFigures += 1;
+                        }
+                    }
+
+                    if (enemyKing.canMove(potentialFigure)) {                            
+                        enemyKingSteps += 1;
+                    }
+                }
+            };
+        };
+
+        checkAndMate = this.checkFigure.length ? true : false;
+        console.log(checkAndMate, enemyKingSteps, defensiveFigures);
+
+        if (checkAndMate && !enemyKingSteps && !defensiveFigures) {
+            this.isCheckAndMate.push(this.checkFigure[0]);
+        } 
+
+        for (let i = 0; i < cells.length; i++) {
+            const row: Cell[] = cells[i];
+            for (let j = 0; j < row.length; j++) {
+                const potentialFigure = row[j];
+                potentialFigure.available = false;
+            }
+        }
     }
 
     public getCopyBoard(): Board {
@@ -67,6 +111,21 @@ export class Board {
         newBoard.checkFigure = this.checkFigure;
         newBoard.isChangingPawn = this.isChangingPawn;
         newBoard.isCheckAndMate = this.isCheckAndMate;
+
+        // for (let i = 0; i < this.cells.length; i++) {
+        //     const row: Cell[] = this.cells[i];
+        //     for (let j = 0; j < row.length; j++) {
+        //         const potentialFigure = row[j];
+        //         if (potentialFigure.available) {
+        //             console.log(potentialFigure.x, potentialFigure.y);
+        //             // if (potentialFigure.figure?.name !== FigureNames.KING
+        //             // && potentialFigure.figure?.canMove()) {
+        //             //     potentialFigure.available = false;
+        //             // }
+        //             // potentialFigure.available = false;
+        //         }
+        //     }
+        // };
 
         return newBoard;
     }
@@ -309,13 +368,9 @@ export class Board {
                     }
 
                     if (checkFigure.name === FigureNames.QUEEN
-                        && selectedCell.figure?.name !== FigureNames.KING) {
+                    && selectedCell.figure?.name !== FigureNames.KING) {
+                        console.log(target.x, target.y, target.available);
                         target.available = false;
-
-                        if (target.x === checkFigure.cell.x && target.y === checkFigure.cell.y) {
-                            target.available = true;
-                            return
-                        }
 
                         bishopCheck();
 
@@ -346,6 +401,10 @@ export class Board {
                                 }
                             }
                         }
+
+                        if (target.x === checkFigure.cell.x && target.y === checkFigure.cell.y) {
+                            target.available = true;
+                        }
                     }
                     
                     if (checkFigure.name === FigureNames.BISHOP
@@ -371,6 +430,8 @@ export class Board {
                         target.available = false;
                         canAttackCheckFigure();
                     }
+
+                    // console.log(!!checkFigure, !!target.available, !!selectedCell)
                 }
             }
         }
