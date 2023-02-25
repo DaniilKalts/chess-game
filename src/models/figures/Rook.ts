@@ -1,8 +1,8 @@
 import { Cell } from "../Cell";
 import { Colors } from "../Colors";
 import { Figure, FigureNames } from "./Figure";
-import blackLogo from '../../assets/black-rook.png'
-import whiteLogo from '../../assets/white-rook.png'
+import blackLogo from '../../assets/images/black-rook.png'
+import whiteLogo from '../../assets/images/white-rook.png'
 
 export class Rook extends Figure {
 

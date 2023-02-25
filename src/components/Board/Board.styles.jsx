@@ -7,12 +7,25 @@ export const BoardContainer = styled.div`
   flex-wrap: wrap;
   position: relative;
 
-  /* &::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-  } */
+  @media screen and (max-width: 1399.98px){
+    width: calc(5vw * 8);
+    height: calc(5vw * 8);
+  }
+  
+  @media screen and (max-width: 991.98px){
+    width: calc(55px * 8);
+    height: calc(55px * 8);
+  }
+  
+  @media screen and (max-width: 767.98px){
+    width: calc(50px * 8);
+    height: calc(50px * 8);
+  }
+  
+  @media screen and (max-width: 474.98px){
+    width: calc(10vw * 8);
+    height: calc(10vw * 8);
+  }
 `
 
 export const HorizontalAbs = styled.div`
@@ -26,6 +39,27 @@ export const HorizontalAbs = styled.div`
     justify-content: space-between;
     align-items: center;
     flex-direction: ${props => props.rotate === '0deg' ? 'row' : 'row-reverse'};
+
+    @media screen and (max-width: 1399.98px){
+      top: ${props => props.absTop === '-4rem' ? '-5vw' : 'auto'};
+      bottom: ${props => props.absBtm === '-4rem' ? '-5vw' : 'auto'};
+    }
+
+    @media screen and (max-width: 991.98px){
+      top: ${props => props.absTop === '-4rem' ? '-55px' : 'auto'};
+      bottom: ${props => props.absBtm === '-4rem' ? '-55px' : 'auto'};
+    }
+
+    @media screen and (max-width: 767.98px){
+      top: ${props => props.absTop === '-4rem' ? '-50px' : 'auto'};
+      bottom: ${props => props.absBtm === '-4rem' ? '-50px' : 'auto'};
+      display: flex;
+    }
+
+    @media screen and (max-width: 474.98px){
+      top: ${props => props.absTop === '-4rem' ? '-10vw' : 'auto'};
+      bottom: ${props => props.absBtm === '-4rem' ? '-10vw' : 'auto'};
+    }
 `
 
 export const VerticalAbs = styled.div`
@@ -38,7 +72,29 @@ export const VerticalAbs = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-direction: ${props => props.rotate === '0deg' ? 'column-reverse' : 'column'};
+    flex-direction: column;
+
+    @media screen and (max-width: 1399.98px){
+      right: ${props => props.absRight === '-4rem' ? '-5vw' : 'auto'};
+      left: ${props => props.absLeft === '-4rem' ? '-5vw' : 'auto'};
+    }
+
+    
+    @media screen and (max-width: 991.98px){
+      right: ${props => props.absRight === '-4rem' ? '-55px' : 'auto'};
+      left: ${props => props.absLeft === '-4rem' ? '-55px' : 'auto'};
+    }
+
+    @media screen and (max-width: 767.98px){
+      right: ${props => props.absRight === '-4rem' ? '-50px' : 'auto'};
+      left: ${props => props.absLeft === '-4rem' ? '-50px' : 'auto'};
+      display: flex;
+    }
+
+    @media screen and (max-width: 474.98px){
+      right: ${props => props.absRight === '-4rem' ? '-10vw' : 'auto'};
+      left: ${props => props.absLeft === '-4rem' ? '-10vw' : 'auto'};
+    }
 `
 
 export const Abs = styled.p`
@@ -51,4 +107,29 @@ export const Abs = styled.p`
     justify-content: center;
     align-items: center;
     text-transform: uppercase;
+    
+    @media screen and (max-width: 1399.98px){
+      width: 5vw;
+      height: 5vw;
+      font-size: 1.5vw;
+    }
+
+     
+    @media screen and (max-width: 991.98px){
+      width: 55px;
+      height: 55px;
+      font-size: 1.15rem;
+    }
+
+    @media screen and (max-width: 767.98px){
+      width: 50px;
+      height: 50px;
+      font-size: 1.1rem;
+    }
+
+    @media screen and (max-width: 474.98px){
+      width: 10vw;
+      height: 10vw;
+      font-size: 4vw;
+    }
 `

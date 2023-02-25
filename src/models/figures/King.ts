@@ -1,8 +1,8 @@
 import { Cell } from "../Cell";
 import { Colors } from "../Colors";
 import { Figure, FigureNames } from "./Figure";
-import blackLogo from '../../assets/black-king.png'
-import whiteLogo from '../../assets/white-king.png'
+import blackLogo from '../../assets/images/black-king.png'
+import whiteLogo from '../../assets/images/white-king.png'
 import { Rook } from "./Rook";
 
 export class King extends Figure {
@@ -34,11 +34,13 @@ export class King extends Figure {
 
             const isSafe = this.cell.isSafe(target.board.getCell(6, this.cell.y), this.color);
 
-            if (count === 2 && rook.isFirstStep 
-            && this.canMove(target.board.getCell(5, this.cell.y))
-            && isSafe
-            ) {
-                return true;    
+            if (rook) {
+                if (count === 2 && rook.isFirstStep 
+                && this.canMove(target.board.getCell(5, this.cell.y))
+                && isSafe
+                ) {
+                    return true;    
+                }
             }
         }
 
@@ -55,10 +57,12 @@ export class King extends Figure {
 
             const isSafe = this.cell.isSafe(target.board.getCell(2, this.cell.y), this.color);
 
-            if (count === 3 && rook.isFirstStep
-            && this.canMove(target.board.getCell(3, this.cell.y))
-            && isSafe) {
-                return true;    
+            if (rook) {
+                if (count === 3 && rook.isFirstStep
+                && this.canMove(target.board.getCell(3, this.cell.y))
+                && isSafe) {
+                    return true;    
+                }
             }
         }
         
@@ -151,12 +155,11 @@ export class King extends Figure {
             if (checkFigure) {
                 if (target === checkFigure.cell) {
                     return willBeUnderAttack();
-                    // return true;
                 }
                 
                 if ((checkFigure.name === FigureNames.BISHOP || checkFigure.name === FigureNames.QUEEN)
                 && Math.abs(checkFigure.cell.x - target.x) === Math.abs(checkFigure.cell.y - target.y)) {
-                    return false
+                    return false;
                 }
 
                 if ((checkFigure.name === FigureNames.ROOK || checkFigure.name === FigureNames.QUEEN)
@@ -166,14 +169,14 @@ export class King extends Figure {
                         if (target.x === checkFigure.cell.x
                         && this.cell.x !== checkFigure.cell.x
                         && this.cell.board.getCell(target.x, Math.min(target.y, checkFigure.cell.y) + 1).figure) {
-                            return true;
+                            return willBeUnderAttack();
                         }
 
                         if (target.y === checkFigure.cell.y
                         && this.cell.y !== checkFigure.cell.y
                         && this.cell.board.getCell(Math.min(target.x, checkFigure.cell.x) + 1, target.y).figure
                         ) {
-                            return true;
+                            return willBeUnderAttack();
                         }
                     }
 
@@ -185,7 +188,7 @@ export class King extends Figure {
                 }
                 
                 if (target.board.checkFigure[0].canMove(target)) {
-                    return false;
+                    return willBeUnderAttack();
                 }
             }
 

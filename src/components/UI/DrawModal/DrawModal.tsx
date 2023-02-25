@@ -1,27 +1,27 @@
-import React, { FC, useState } from 'react'
-import { Board } from '../../../models/Board';
-import { Colors } from '../../../models/Colors';
-import HistoryModal from '../HistoryModal/HistoryModal';
-import { ModalBody, ModalClose, ModalContent, TimeDialog, ModalFooter, ModalHeader, ModalTitle, TimeWrapper } from '../Modal.styles';
+import Reac, { FC } from 'react'
+import { Board } from '../../../models/Board'
+import HistoryModal from '../HistoryModal/HistoryModal'
+import { ModalBody, ModalClose, ModalContent, ModalFooter, ModalHeader, ModalTitle, DrawDialog, TimeWrapper } from './DrawModal.styles'
 
-interface ModalProps {
+type Modal = {
     board: Board,
+    color: string,
     isHistoryModal: boolean,
     setIsHistoryModal: any,
-    color: Colors | null,
     title: string,
     content: any,
     footer: any, 
     onClose: () => void
 }
 
-const TimeOverModal: FC<ModalProps> = ({ board, isHistoryModal, setIsHistoryModal, color, title, content, footer, onClose }) => {
-    return (
-        <>
-        <TimeDialog onClick={(e: React.SyntheticEvent) => e.stopPropagation()} color={color}>
-            <TimeWrapper color={color}>
+const DrawModal: FC<Modal> = ({ board, color, isHistoryModal, setIsHistoryModal, title, content, footer, onClose }) => {
+  return (
+    <>
+
+        <DrawDialog onClick={(e: React.SyntheticEvent) => e.stopPropagation()} color={color}>
+            <TimeWrapper>
                 <ModalHeader>
-                <ModalTitle color={color}>{title}</ModalTitle>
+                <ModalTitle>{title}</ModalTitle>
                     <ModalClose onClick={onClose}>
                         &times;
                     </ModalClose>
@@ -31,10 +31,10 @@ const TimeOverModal: FC<ModalProps> = ({ board, isHistoryModal, setIsHistoryModa
                 </ModalBody>
                 {footer && <ModalFooter>{footer}</ModalFooter>}
             </TimeWrapper>
-        </TimeDialog>
+        </DrawDialog>
 
         {isHistoryModal && 
-        <HistoryModal 
+        <HistoryModal
             setIsHistoryModal={setIsHistoryModal}   
             color="#627891"
             title="History of movements"
@@ -53,8 +53,9 @@ const TimeOverModal: FC<ModalProps> = ({ board, isHistoryModal, setIsHistoryModa
             footer={<button onClick={() => setIsHistoryModal(false)}>Close</button>}
             onClose={() => setIsHistoryModal(false)}
         />}
-        </>
-    )
+
+    </>
+  )
 }
 
-export default TimeOverModal;
+export default DrawModal;

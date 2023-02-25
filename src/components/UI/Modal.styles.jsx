@@ -11,7 +11,7 @@ export const CheckDialog = styled.div`
   display: flex;
   flex-direction: column;
   position: absolute;
-  left: calc(64px * 8);
+  left: calc(57px * 8);
   top: -50px;
   z-index: 1;
   overflow: hidden;
@@ -74,6 +74,14 @@ export const CheckDialog = styled.div`
         background: ${props => props.color === 'black' ? '#222' : '#fff'};
         color: ${props => props.color === 'black' ? '#fff' : '#222'};
     }
+  }
+
+  @media screen and (max-width: 1399.98px) {
+    left: calc(3vw * 8);
+  }
+  
+  @media screen and (max-width: 991.98px) {
+    display: none;
   }
 `
 

@@ -1,0 +1,443 @@
+@media screen and ( min-width: 50em ) {
+  .flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.flex--center {
+  align-items: center;
+}
+
+.flex__child {
+  flex: 1 0 auto;
+  max-width: 100%;
+  padding: 2em;
+}
+  .flex__child { padding: .5em 2em; }
+}
+
+
+
+/**
+ * Selected rulesets from normalize.css
+ * https://necolas.github.io/normalize.css/8.0.1/normalize.css
+ */
+
+/**
+ * 1. Correct the line height in all browsers.
+ * 2. Prevent adjustments of font size after orientation changes in iOS.
+ */
+
+html {
+  line-height: 1.15; /* 1 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+}
+
+/**
+ * 1. Change the font styles in all browsers.
+ * 2. Remove the margin in Firefox and Safari.
+ */
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+  line-height: 1.15; /* 1 */
+  margin: 0; /* 2 */
+}
+
+/**
+ * Show the overflow in IE.
+ * 1. Show the overflow in Edge.
+ */
+
+button,
+input { /* 1 */
+  overflow: visible;
+}
+
+
+
+/* ***********
+  Styled controls
+************ */
+.styled {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.styled fieldset {
+  border: 1px solid;
+  margin: 0;
+}
+
+.styled input,
+.styled select,
+.styled textarea {
+  color: inherit;
+  font: inherit;
+  position: relative;
+}
+
+
+.styled input[type="time"],
+.styled .unsupported {
+  border: none;
+  display: block;
+  margin-bottom: .625em;
+  margin-top: .3em;
+  outline-offset: 3px;
+  padding: .45em .45em .45em .65em;
+  width: 100%;
+  font-size: 2.5rem;
+}
+
+.styled.cyan input[type="time"],
+.styled.cyan .unsupported {
+    background-color: #EAEFF1;
+    border-bottom: 4px solid #C9D6DA;
+}
+
+.styled.green input[type="time"],
+.styled.green .unsupported {
+    background-color: #fdfde4;
+    border-bottom: 4px solid #769656;
+}
+
+.styled.brown input[type="time"],
+.styled.brown .unsupported {
+    background-color: #fde9c9;
+    border-bottom: 4px solid #b58863;
+}
+
+input[type="time"]:before {
+    content: attr(placeholder) !important;
+    color: #aaa;
+  font-style:italic;
+  font-size:0.9em;
+  }
+
+.no-stepper {
+input[type=time]::-webkit-inner-spin-button {
+  display: none;
+  }}
+
+
+/**
+ * Checkbox specific
+ */
+.styled input[type="checkbox"] {
+  -moz-appearance: none;
+  -o-appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid;
+  border-radius: 4px;
+  height: 2em;
+  width: 2em;
+  font-size: inherit;
+  line-height: 1;
+  vertical-align: bottom;
+  position: relative;
+}
+
+.styled.cyan input[type="checkbox"] {
+    background: #fff;
+}
+
+.styled.green input[type="checkbox"] {
+    background: #ffffed;
+}
+
+.styled.brown input[type="checkbox"] {
+    background: #faebd2;
+}
+
+.styled input[type="checkbox"]:before,
+.styled input[type="checkbox"]:after {
+  border-bottom: 3px solid green;
+  border-right: 3px solid green;
+  bottom: 0;
+  content: "";
+  height: 1em;
+  margin: auto;
+  position: absolute;
+  right: .5em;
+  top: -.5em;
+  transform: rotate(45deg) scale(0);
+  transition: transform .2s ease-in-out;
+  width: .625em;
+}
+
+
+.styled input[type="checkbox"]:checked:before {
+  transform: rotate(45deg) scale(1);
+}
+
+.styled input[type="checkbox"]:checked:after {
+  animation: expand .8s;
+}
+
+.styled input[type="checkbox"]:focus {
+  box-shadow: 0 0 0 1px;
+  border: 2px solid;
+  outline: none;
+  /*
+    can use outline none here because revised box-shadow
+    and border-width adjustments are made to replace
+    the default outline indicator.
+  */
+}
+
+
+@keyframes expand {
+  0% {
+    transform: rotate(45deg) scale(0);
+    opacity: 1;
+  }
+  50% {
+    top: -30px;
+    transform: rotate(45deg) scale(2.25);
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    top: -30px;
+    transform: rotate(45deg) scale(2.25);
+  }
+}
+
+/* -ms-check will affect both checkboxes and radio buttons, so you have to be specific */
+.styled input[type="checkbox"]::-ms-check {
+   border: 2px solid #888;
+   border-radius: 2px;
+   color: green;
+  /*
+    disabled and required/invalid
+    styles would be good to add too!
+  */
+ }
+
+
+/**
+ * Styles for the wrapping element and
+ * the custom down arrow / background
+ */
+.styled .select {
+  background-color: #2a2a2a;
+  position: relative;
+}
+
+.styled .select:after,
+.styled .select:before {
+  bottom: 0;
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+}
+
+.styled .select:before {
+  right: 0;
+  width: 1.85em;
+}
+
+.styled .select:after {
+  border-bottom: 2px solid #fff;
+  border-right: 2px solid #fff;
+  height: .5em;
+  margin: auto;
+  right: .75em;
+  transform-origin: center right;
+  transform: rotate(45deg);
+  width: .5em;
+  z-index: 2;
+}
+
+.styled.cyan .select:focus-within:before {
+  background-color: #015f9f;
+}
+
+.styled.green .select:focus-within:before {
+    background-color: #547a2e;
+}
+
+.styled.brown .select:focus-within:before {
+    background-color: #d6823e;
+}
+
+/**
+ * Target only select elements that are
+ * child elements of the custom style.
+ * These styles could really mess up other
+ * selects that aren't within the parent wrapper.
+ */
+.styled .select select {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border-radius: 0;
+  border: 1px solid #000;
+  color: #fff;
+  line-height: normal;
+  max-width: 100%;
+  padding: .75em 2em .75em .75em;
+  width: 100%;
+}
+
+/*.styled .select select:focus-visible*/
+.styled .select select:-moz-focusring {
+  color: transparent;
+  text-shadow: 0 0 0 #fff;
+}
+
+.styled .select select:focus {
+  border-color: #015f9f;
+  box-shadow: inset 0 0 0 1px #015f9f, 0 0 0 2px #015f9f;
+  outline: none;
+}
+
+.styled .select select[disabled] {
+  color: rgba(255,255,255,.75);
+  cursor: not-allowed;
+  opacity: .75;
+}
+
+/**
+ * 1. remove background focus style from IE11 while keeping
+ *    focus style available on option elements
+ * 2. remove the default down arrow in IE/Edge
+ */
+.styled .select select::-ms-value {
+  background: transparent; /* 1 */
+}
+
+.styled .select select::-ms-expand {
+  display: none; /* 2 */
+}
+
+
+
+
+/* Label */
+.styled label {
+  display:block;
+  font-size: 2.5rem;
+  font-weight:bold;
+}
+
+.styled.cyan label {
+    color: #00B8FF;
+}
+
+.styled.green label {
+    color: #769656;
+}
+
+.styled.brown label {
+    color: #b58863;
+}
+
+/**
+ * Focus
+ */
+.styled input[type="time"]:focus {
+  outline: none;
+}
+
+.styled.cyan input[type="time"]:focus {
+    background: #E6F8FF;
+    border-bottom: 4px solid #00B8FF;
+}
+
+.styled.green input[type="time"]:focus {
+    background: #f3f3d4;
+    border-bottom: 4px solid #769656;
+}
+
+.styled.brown input[type="time"]:focus {
+    background: #f0e0c6;
+    border-bottom: 4px solid #b58863;
+}
+
+/**
+ * Invalid
+ */
+
+.styled input[type="time"]:invalid {
+    border-bottom: 4px solid #EF0000;
+}
+
+
+.styled input[type="time"]:disabled {
+    border-bottom:none;
+}
+
+.styled.cyan input[type="time"]:invalid {
+    background: #E6F8FF;
+}
+
+.styled.cyan input[type="time"]:disabled {
+    background: #E6F8FF;
+}
+
+.styled.green input[type="time"]:invalid {
+    background: #f1f1d5;
+}
+
+.styled.green input[type="time"]:disabled {
+    background: #f1f1d5;
+}
+
+.styled.brown input[type="time"]:invalid {
+    background: #eeddc3;
+}
+
+.styled.brown input[type="time"]:disabled {
+    background: #eeddc3;
+}
+
+.btn {
+    width: 100%;
+    padding: 0.75rem 3rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    color: #fff;
+    border: 0;
+    transition: background-color 0.5s;
+}
+
+.styled.cyan .btn {
+    background-color: #00b8ff;
+}
+
+.styled.cyan .btn:hover {
+    background-color: #036FE2;
+}
+
+.styled.green .btn {
+    background-color: #769656;
+}
+
+.styled.green .btn:hover {
+    background-color: #547a2e;
+}
+
+.styled.brown .btn{
+    background-color: #b58863;
+}
+
+.styled.brown .btn:hover {
+    background-color: #d6823e;
+}

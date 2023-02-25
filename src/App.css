@@ -10,35 +10,21 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
 }
 
 .app {
   width: 100vw;
   height: 100vh;
-  max-width: 1600px;
+  max-width: 1500px;
   margin: 0 auto;
-  padding: 0 6rem;
+  padding: 0 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center; 
 
   position: relative;
-  max-height: 1000px;
-}
 
-.cell {
-  width: 64px;
-  height: 64px;
-  display: flex;
-  justify-content: center;
-  align-items: center; 
-}
-
-.cell img{
-  width: 48px;
-  height: 48px;
-  position: relative;
+  overflow: auto;
 }
 
 .black {
@@ -49,17 +35,37 @@ body {
   background-color: #627891;
 }
 
-.selected {
-  background-color: #53d2ea;
+@media screen and (max-width: 991.98px) {
+  body {
+    min-height: 700px;
+  }
+
+  .app {
+    flex-direction: column-reverse;
+    justify-content: center;
+    padding-top: 2rem;
+    min-height: 900px;
+  }
 }
 
-.attacked{
-  background-color: #ff0000;
+@media screen and (max-width: 767.98px) {
+  .app {
+    min-height: 850px;
+    padding-top: 6rem;
+  }
 }
 
-.available {
-  height: 12px;
-  width: 12px;
-  border-radius: 50%;
-  background-color: #53d2ea;
+@media screen and (max-width: 474.98px) {
+  .app {
+    min-height: 800px;
+    padding-top: 6rem;
+  }
 }
+
+@media screen and (max-width: 424.98px) {
+  .app {
+    min-height: 725px;
+    padding-top: 4rem;
+  }
+}
+

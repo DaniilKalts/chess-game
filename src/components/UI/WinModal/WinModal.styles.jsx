@@ -150,6 +150,14 @@ export const TimeWrapper = styled.div`
   .chessImage{
     width: 4rem;
     margin: 1rem 0;
+
+    @media screen and (max-width: 574.98px) {
+      width: 3.75rem;
+    }
+    
+    @media screen and (max-width: 474.98px) {
+      width: 13vw;
+    }
   }
 
   h3 {
@@ -159,12 +167,18 @@ export const TimeWrapper = styled.div`
   h4{
     font-size: 1.5rem;
     margin: 1.5rem 0;
+
+    @media screen and (max-width: 424.98px) {
+      font-size: 1.35rem;
+      margin: 1.25rem 0;
+    }
   }
 
   h6{
     font-size: 1.15rem;
     color: ${props => props.color === 'white' ? '#ffd963' : '#ff0000'};
     margin: 0.25rem 0;
+    text-align: center;
   }
 `
 
@@ -179,6 +193,9 @@ export const ModalHeader = styled.header`
 
 export const ModalTitle = styled.h3`
   font-size: 1.5rem;
+  @media screen and (max-width: 424.98px) {
+    font-size: 1.25rem;
+  }
 `
 
 export const ModalClose = styled.span`

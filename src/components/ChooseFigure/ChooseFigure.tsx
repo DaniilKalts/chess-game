@@ -1,17 +1,17 @@
 import React, { FC } from 'react'
 import { ChooseContainer, ChooseTitle, ChooseWrapper, FigureBody, FigureConatiner, FigureList, FigureTitle } from './ChooseFigure.styles';
 
-import blackKnight from '../../assets/black-knight.png'
-import whiteKnight from '../../assets/white-knight.png'
+import blackKnight from '../../assets/images/black-knight.png'
+import whiteKnight from '../../assets/images/white-knight.png'
 
-import blackBishop from '../../assets/black-bishop.png'
-import whiteBishop from '../../assets/white-bishop.png'
+import blackBishop from '../../assets/images/black-bishop.png'
+import whiteBishop from '../../assets/images/white-bishop.png'
 
-import blackQueen from '../../assets/black-queen.png'
-import whiteQueen from '../../assets/white-queen.png'
+import blackQueen from '../../assets/images/black-queen.png'
+import whiteQueen from '../../assets/images/white-queen.png'
 
-import blackRook from '../../assets/black-rook.png'
-import whiteRook from '../../assets/white-rook.png'
+import blackRook from '../../assets/images/black-rook.png'
+import whiteRook from '../../assets/images/white-rook.png'
 import { Figure } from '../../models/figures/Figure';
 
 type ChooseProps = {

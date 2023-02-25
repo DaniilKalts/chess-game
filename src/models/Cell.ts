@@ -138,13 +138,13 @@ export class Cell {
         const king = this.getEnemyKing(target) as King;
             
         if (target.figure?.canMove(king?.cell)) {
-            this.board.checkFigure.length ? this.board.checkFigure.splice(0,1) : '';
+            this.board.checkFigure.length ? this.board.checkFigure.length = 0 : '';
             this.board.checkFigure.push(target.figure);
             king.wasUnderAttack = true;
             return true;
         }
 
-        this.board.checkFigure.splice(0,1);
+        this.board.checkFigure.length = 0;
         return false;
     }
 
@@ -194,7 +194,7 @@ export class Cell {
             }
             target.setFigure(this.figure, absX, absY);
 
-            this.board.checkFigure.length ? this.board.checkFigure.splice(0,1) : '';
+            this.board.checkFigure.length ? this.board.checkFigure.length = 0 : '';
 
             this.figure = null;
 
@@ -202,11 +202,28 @@ export class Cell {
             let checkAndMate = false;
             let enemyKingSteps = 0;
             let defensiveFigures = 0;
+            let figuresCount = 0;
+            let enemyFigureSteps = 0;
 
             for (let i = 0; i < cells.length; i++) {
                 const row: Cell[] = cells[i];
                 for (let j = 0; j < row.length; j++) {
                     const potentialFigure = row[j];
+
+                    for (let x = 0; x < cells.length; x++) {
+                        const innerRow: Cell[] = cells[x];
+                        for (let y = 0; y < row.length; y++) {
+                            const innerCell = innerRow[y];
+                            if (potentialFigure.figure?.color === enemyKing.color
+                            && potentialFigure.figure?.canMove(innerCell)) {
+                                enemyFigureSteps += 1;
+                            }
+                        }
+                    }
+
+                    if (potentialFigure.figure) {
+                        figuresCount += 1;
+                    }
                     
                     if (potentialFigure.figure?.color !== enemyKing.color
                     && potentialFigure.figure?.canMove(enemyKing.cell)) {
@@ -239,14 +256,17 @@ export class Cell {
                     }
                 };
             }
-
-            // console.log(this.board.checkFigure.length ? true : false, enemyKingSteps, defensiveFigures);
+            
 
             checkAndMate = this.board.checkFigure.length ? true : false;
-            console.log(checkAndMate, enemyKingSteps, defensiveFigures);
+
+            if (!checkAndMate && figuresCount === 2) {
+                this.board.isDraw.push(1);
+            } else if (!checkAndMate && (enemyFigureSteps === 0 && enemyKingSteps === 0)) {
+                this.board.isDraw.push(1);
+            } 
 
             if (checkAndMate && !enemyKingSteps && !defensiveFigures) {
-                console.log(checkAndMate, enemyKingSteps, defensiveFigures);
                 this.board.isCheckAndMate.push(this.board.checkFigure[0]);
             } 
         }

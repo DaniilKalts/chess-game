@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 
-export const TimeDialog = styled.div`
+export const DrawDialog = styled.div`
   width: 100%;
+  background: rgba(0,0,0,0.6);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -13,10 +14,9 @@ export const TimeDialog = styled.div`
   z-index: 1;
 `
 
-export const HistoryWrapper = styled.div`
+export const TimeWrapper = styled.div`
   width: 100%;
   max-width: 550px;
-  height: 540px;
   position: relative;
   margin: 0 20px;
   max-height: calc(100vh - 40px);
@@ -25,9 +25,22 @@ export const HistoryWrapper = styled.div`
   flex-direction: column;
   z-index: 1;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  -webkit-animation-name: animatetop;
+  -webkit-animation-duration: 0.4s;
+  animation-name: slide-in;
+  animation-duration: 0.5s;
 
-  background: ${localStorage.getItem('theme') ? localStorage.getItem('theme') : '#627891'};
-  color: ${props => props.color === 'black' ? '#fff' : '#222'};
+  background: ${props => props.color === 'black' ? '#fff' : '#222'};
+  color: ${props => props.color === 'black' ? '#222' : '#fff'};
+  
+  @keyframes slide-in {
+    from {
+      transform: translateY(-150px);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
 
   .stopWatch{
     width: 8rem;
@@ -41,63 +54,51 @@ export const HistoryWrapper = styled.div`
     font-weight: 600;
     padding: 0.6rem 2rem;
     background: transparent;
-    color: ${props => props.color === 'white' ? '#222' : '#fff'};
-    border: 2px solid ${props => props.color === 'white' ? '#222' : '#fff'};
+    color: #fff;
+    border: 2px solid #fff;
     cursor: pointer;
     transition: all 0.25s ease 0s;
+    margin-top: 1.5rem;
 
     &:hover{
-        background: ${props => props.color === 'white' ? '#222' : '#fff'};
-        color: ${props => props.color === 'white' ? '#fff' : '#222'};
+        background: #fff;
+        color: #222;
     }
-  }
-
-  .history-body {
-    display: flex;
-    flex-wrap: wrap;
-    width: 12rem;
   }
 
   .figure-content{
     display: flex;
     align-items: center;
     flex-direction: column;
-    padding: 0.75rem 0;
-    overflow-y: auto;
-    width: 50%;
+    margin-bottom: 0.5rem;
   }
 
   .chessImage{
     width: 10rem;
-    margin: 1rem 0;
-  }
+    margin: 0.75rem 0;
 
-  h3 {
-    color: #ffd963;
-  }
-
-  h4{
-    font-size: 1.25rem;
-    color: #fff;
-    margin-top: 1rem;
-  }
-
-  img{
-    width: 4rem;
-    
     @media screen and (max-width: 474.98px) {
-      width: 3.5rem;
+      width: 8rem;
     }
   }
 
-  .empty__movements {
+  h3 {
     color: #fff;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    text-align: center;
+  }
+
+  h4{
+    font-size: 1.5rem;
+    margin: 1rem 0;
+
+    @media screen and (max-width: 474.98px) {
+      margin: 0.5rem 0;
+    }
+  }
+
+  h6{
+    font-size: 1.15rem;
+    color: ${props => props.color === 'white' ? '#ffd963' : '#ff0000'};
+    margin: 0.25rem 0;
   }
 `
 
@@ -123,17 +124,6 @@ export const ModalClose = styled.span`
 
 export const ModalBody = styled.div`
   overflow: auto;
-  height: 100%;
-  ::-webkit-scrollbar {
-      background-color: transparent;
-      width: 6px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-      background-color: ${localStorage.getItem('theme') === '#627891' ? '#9fa9ba' 
-                : localStorage.getItem('theme') === '#769656' ? '#e0e0c6' 
-                : localStorage.getItem('theme') === '#b58863' ? '#f0d9b5' : '#9fa9ba'};
-  }
 `
 
 export const ModalContent = styled.div`

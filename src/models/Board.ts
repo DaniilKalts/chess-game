@@ -17,6 +17,7 @@ export class Board {
     checkFigure: Figure[] = [];
     isChangingPawn: Figure[] = [];
     isCheckAndMate: Figure[] = [];
+    isDraw: number[] = [];
 
     public initCells () {
         for (let i = 0; i < 8; i++) {
@@ -50,7 +51,7 @@ export class Board {
         }
         
         if (enemyKing && cell.figure?.canMove(enemyKing.cell)) {
-            this.checkFigure.length > 0 ? this.checkFigure.splice(0,1) : '';
+            this.checkFigure.length > 0 ? this.checkFigure.length = 0 : '';
             this.checkFigure.push(cell.figure);
             enemyKing.wasUnderAttack = true;
         }
@@ -87,7 +88,6 @@ export class Board {
         };
 
         checkAndMate = this.checkFigure.length ? true : false;
-        console.log(checkAndMate, enemyKingSteps, defensiveFigures);
 
         if (checkAndMate && !enemyKingSteps && !defensiveFigures) {
             this.isCheckAndMate.push(this.checkFigure[0]);
@@ -111,21 +111,8 @@ export class Board {
         newBoard.checkFigure = this.checkFigure;
         newBoard.isChangingPawn = this.isChangingPawn;
         newBoard.isCheckAndMate = this.isCheckAndMate;
-
-        // for (let i = 0; i < this.cells.length; i++) {
-        //     const row: Cell[] = this.cells[i];
-        //     for (let j = 0; j < row.length; j++) {
-        //         const potentialFigure = row[j];
-        //         if (potentialFigure.available) {
-        //             console.log(potentialFigure.x, potentialFigure.y);
-        //             // if (potentialFigure.figure?.name !== FigureNames.KING
-        //             // && potentialFigure.figure?.canMove()) {
-        //             //     potentialFigure.available = false;
-        //             // }
-        //             // potentialFigure.available = false;
-        //         }
-        //     }
-        // };
+        newBoard.isDraw = this.isDraw;
+        
 
         return newBoard;
     }
@@ -169,6 +156,10 @@ export class Board {
                             && potentialFigure.figure?.name !== FigureNames.KING
                             && potentialFigure.figure?.name !== FigureNames.KNIGHT
                             && potentialFigure.figure) {
+                                // if (target.available && target.figure?.name === FigureNames.PAWN) {
+                                //     return
+                                // }
+
                                 const diagonalCheck = () => {
                                     const min = Math.min(potentialFigure.y, king.cell.y);
                                     const max = Math.max(potentialFigure.y, king.cell.y);
@@ -369,7 +360,6 @@ export class Board {
 
                     if (checkFigure.name === FigureNames.QUEEN
                     && selectedCell.figure?.name !== FigureNames.KING) {
-                        console.log(target.x, target.y, target.available);
                         target.available = false;
 
                         bishopCheck();
@@ -430,8 +420,6 @@ export class Board {
                         target.available = false;
                         canAttackCheckFigure();
                     }
-
-                    // console.log(!!checkFigure, !!target.available, !!selectedCell)
                 }
             }
         }

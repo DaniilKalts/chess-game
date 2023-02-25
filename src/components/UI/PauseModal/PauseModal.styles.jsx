@@ -20,9 +20,4 @@ export const ModalContent = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-
-  img{
-    width: 8rem;
-    cursor: pointer;
-  }
 `

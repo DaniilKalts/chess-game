@@ -1,74 +1,44 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Route, Routes } from 'react-router';
+import { BrowserRouter } from 'react-router-dom';
 import './App.css';
-import BoardComponent from './components/Board/BoardComponent'
-import ChessInfo from './components/ChessInfo/ChessInfo';
-import ChooseFigure from './components/ChooseFigure/ChooseFigure';
-import EatenFigures from './components/EatenFigures/EatenFigures';
-import { PlayerContext } from './context/PlayerContext';
-import { Board } from './models/Board';
-import { Colors } from './models/Colors';
-import { Figure, FigureNames } from './models/figures/Figure';
-import { Player } from './models/Player';
+import { LoadingContext } from './context/Loading';
+import Game from './pages/Game/Game';
+import Menu from './pages/Menu/Menu';
+import Settings from './pages/Settings/Settings';
+import SettingTime from './pages/SettingTime/SettingTime';
 
 function App() {
-  const [board, setBoard] = useState<Board>(new Board());
-  const [whitePlayer, setWhitePlayer] = useState<Player>(new Player(Colors.WHITE));
-  const [blackPlayer, setBlackPlayer] = useState<Player>(new Player(Colors.BLACK));
-  const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
-  const [isChangingPawn, setIsChangingPawn] = useState<Figure | null>(null);
-  const [isChoosingFigure, setIsChoosingFigure] = useState<boolean>(false);
-  const [isTime, setIsTime] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    restart();
-  }, []);
+    setTimeout(() => {
+      setLoading(false);
+    }, 7200);
+
+    localStorage.setItem('gameTime', JSON.stringify(600));
+  }, [])
 
   useEffect(() => {
-    setIsChangingPawn(board.isChangingPawn[0]);
-    if (board.isChangingPawn[0] && board.isChangingPawn[0]?.name === FigureNames.PAWN) {
-      setIsChoosingFigure(true);
+    if (localStorage.getItem('theme') === null) {
+      localStorage.setItem('theme', '#627891')
     }
-  }, [board]);
-
-  function restart() {
-    const newBoard = new Board();
-    newBoard.initCells();
-    newBoard.addFigures();
-    setBoard(newBoard);
-    setCurrentPlayer(whitePlayer);
-    setIsTime(true);
-  }
-
-  function swapPlayer() {
-    setCurrentPlayer(currentPlayer?.color === Colors.WHITE ? blackPlayer : whitePlayer);
-  }
-
-  function changeFigure(figure: any) {
-    board.changePawn(figure);
-    setIsChoosingFigure(false);
-  }
+  }, [])
 
   return (
-    <PlayerContext.Provider
-      value={currentPlayer}
+    <LoadingContext.Provider
+      value={loading}
     >
-      <div className="app">
-        <ChessInfo restart={restart} board={board} setTime={() => setIsTime(false)} />
-        <ChooseFigure setFigure={changeFigure} isChangingPawn={isChangingPawn} isVisible={isChoosingFigure}></ChooseFigure>
-        <BoardComponent
-          board={board}
-          setBoard={setBoard}
-          currentPlayer={currentPlayer}
-          swapPlayer={swapPlayer}
-          isTime={isTime}
-          isChoosingFigure={isChoosingFigure}
-        />
-        <EatenFigures 
-          lostWhiteFigures={board.lostWhiteFigures} 
-          lostBlackFigures={board.lostBlackFigures} 
-        />
-      </div>
-    </PlayerContext.Provider>
+      <BrowserRouter>
+        <Routes>
+          <Route path='' element={<Menu />} />
+          <Route path='/game' element={<Game />} />
+          <Route path='/setting-time' element={<SettingTime />} />
+          <Route path='/settings' element={<Settings />} />
+          <Route path='/menu' element={<Menu />} />
+        </Routes>
+      </BrowserRouter>
+    </LoadingContext.Provider>
   );
 }
 
