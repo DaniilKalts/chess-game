@@ -13,7 +13,12 @@ const SettingTime = () => {
     } else if (gameTime && Number(gameTime.slice(0,2) + gameTime.slice(3,5)) > 1000) {
       alert(`Time can't exceed 10 minutes!`);
       return
+    } else if (gameTime && Number(gameTime.slice(0,2) + gameTime.slice(3,5)) < 200) {
+      alert(`Time can't be less, than 10 minutes!`);
+      return
     }
+
+    console.log(Number(gameTime.slice(0,2) + gameTime.slice(3,5)))
 
     localStorage.setItem('gameTime', JSON.stringify(Number(gameTime.slice(0,2)) * 60 + Number(gameTime.slice(3,5))));
 
